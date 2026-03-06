@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+venv/
+.venv/
+
+# Node
+node_modules/
+.next/
+out/
+build/
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# IDE
+.DS_Store
+*.pem
+.idea/
+.vscode/
+
+# Vercel
+.vercel
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+*.tsbuildinfo
+next-env.d.ts
