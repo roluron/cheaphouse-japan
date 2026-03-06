@@ -3,8 +3,10 @@ import { LIVING_PROFILES, formatPrice, formatArea } from "../lib/data";
 
 export default function PropertyCard({ property }) {
     const {
+        id,
         slug,
         title_en,
+        original_title,
         price_jpy,
         price_display,
         prefecture,
@@ -14,16 +16,22 @@ export default function PropertyCard({ property }) {
         rooms,
         year_built,
         thumbnail_url,
+        images,
         quality_score,
         lifestyle_tags,
         freshness_label,
         hazard_scores,
     } = property;
 
+    const displayTitle = title_en || original_title || "Untitled Property";
+    const displaySlug = slug || id;
+    const imgUrl = thumbnail_url ||
+        (Array.isArray(images) && images.length > 0 ? (typeof images[0] === "string" ? images[0] : images[0]?.url) : null);
+
     const qualityColor =
-        quality_score >= 0.7
+        (quality_score || 0) >= 0.7
             ? "var(--accent-green)"
-            : quality_score >= 0.5
+            : (quality_score || 0) >= 0.5
                 ? "var(--accent-amber)"
                 : "var(--accent-rose)";
 
@@ -35,14 +43,18 @@ export default function PropertyCard({ property }) {
         : null;
 
     return (
-        <Link href={`/properties/${slug}`} id={`property-${slug}`}>
+        <Link href={`/properties/${displaySlug}`} id={`property-${displaySlug}`}>
             <article className="property-card">
                 <div className="property-card-image">
-                    <img
-                        src={thumbnail_url}
-                        alt={title_en}
-                        loading="lazy"
-                    />
+                    {imgUrl ? (
+                        <img
+                            src={imgUrl}
+                            alt={displayTitle}
+                            loading="lazy"
+                        />
+                    ) : (
+                        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48, opacity: 0.3 }}>🏠</div>
+                    )}
                     {freshness_label === "new" && (
                         <span
                             className="badge badge-blue"
@@ -86,7 +98,7 @@ export default function PropertyCard({ property }) {
                             ? `¥${price_jpy.toLocaleString()}`
                             : "Price TBD"}
                     </div>
-                    <h3 className="property-card-title">{title_en}</h3>
+                    <h3 className="property-card-title">{displayTitle}</h3>
                     <div className="property-card-location">
                         📍 {city || "Unknown"}, {prefecture || "Unknown"}
                     </div>
