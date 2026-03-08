@@ -368,21 +368,25 @@ with st.sidebar:
         with st.spinner("Running full pipeline..."):
             st.session_state.process_output = run_pipeline_command([])
             st.session_state.process_name = "Full Pipeline"
+        st.rerun()
 
     if st.button("📥 Scrape Only", use_container_width=True):
         with st.spinner("Scraping..."):
             st.session_state.process_output = run_pipeline_command(["--scrape"])
             st.session_state.process_name = "Scrape"
+        st.rerun()
 
     if st.button("🧠 Enrich Only", use_container_width=True):
         with st.spinner("Enriching with Ollama..."):
             st.session_state.process_output = run_pipeline_command(["--enrich"])
             st.session_state.process_name = "Enrich"
+        st.rerun()
 
     if st.button("🔍 Freshness Check", use_container_width=True):
         with st.spinner("Checking freshness..."):
             st.session_state.process_output = run_pipeline_command(["--freshness"])
             st.session_state.process_name = "Freshness"
+        st.rerun()
 
     st.divider()
 
@@ -632,9 +636,9 @@ with tab_ai:
         try:
             heal_state = _json.loads(heal_state_path.read_text())
             sources = heal_state.get("sources", {})
-            disabled = {s: st for s, st in sources.items() if st.get("disabled")}
-            attempting = {s: st for s, st in sources.items()
-                         if st.get("fix_attempts", 0) > 0 and not st.get("disabled")}
+            disabled = {s: v for s, v in sources.items() if v.get("disabled")}
+            attempting = {s: v for s, v in sources.items()
+                         if v.get("fix_attempts", 0) > 0 and not v.get("disabled")}
 
             if disabled:
                 for slug, state in disabled.items():
