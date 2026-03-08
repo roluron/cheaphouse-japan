@@ -250,6 +250,15 @@ def hazard(limit: int):
 
 @cli.command()
 @click.option("--limit", "-n", default=500)
+def geocode(limit: int):
+    """Geocode properties missing lat/lng using Nominatim."""
+    from ingestion.pipeline.geocode import geocode_all
+    count = geocode_all(limit=limit)
+    click.echo(f"  Geocoded {count} properties.")
+
+
+@cli.command()
+@click.option("--limit", "-n", default=500)
 def lifestyle(limit: int):
     """Run lifestyle tagging on properties."""
     from ingestion.pipeline.lifestyle import tag_lifestyle_all
@@ -305,5 +314,96 @@ def review_queue(limit: int):
         click.echo(f"  Error: {e}")
 
 
+@cli.command("check-freshness")
+def check_freshness():
+    """Check all listings for sold/removed status."""
+    import asyncio
+
+    try:
+        from supabase import create_client
+        import os
+
+        url = os.environ.get("SUPABASE_URL")
+        key = os.environ.get("SUPABASE_SERVICE_KEY") or os.environ.get("SUPABASE_KEY")
+        if not url or not key:
+            click.echo("Error: SUPABASE_URL and SUPABASE_SERVICE_KEY must be set")
+            sys.exit(1)
+
+        sb = create_client(url, key)
+
+        from pipeline.freshness import check_all_listings
+        result = asyncio.run(check_all_listings(sb))
+        click.echo(f"\nResults: Sold={result['sold']}, Dead={result['dead']}, Errors={result['errors']}")
+    except ImportError as e:
+        click.echo(f"Missing dependency: {e}")
+        click.echo("Install: pip install aiohttp supabase")
+        sys.exit(1)
+    except Exception as e:
+        click.echo(f"Error: {e}")
+        sys.exit(1)
+
+
+@cli.command("check-llm")
+def check_llm():
+    """Check if the LLM provider is available and ready."""
+    from ingestion.config import LLM_PROVIDER
+    click.echo(f"\n  LLM Provider: {LLM_PROVIDER}")
+
+    if LLM_PROVIDER == "ollama":
+        from ingestion.llm_client import check_ollama_available
+        if check_ollama_available():
+            click.echo("\n  Ready to process listings for FREE!")
+        else:
+            click.echo("\n  To set up Ollama:")
+            click.echo("    1. Start Ollama: ollama serve")
+            click.echo("    2. Pull model:   ollama pull qwen2.5:14b")
+            click.echo("    3. Run pipeline: python run.py pipeline")
+    else:
+        from ingestion.config import OPENAI_API_KEY
+        if OPENAI_API_KEY:
+            click.echo(f"  OpenAI API key configured ({OPENAI_API_KEY[:8]}...)")
+            click.echo("  Ready to process (paid API).")
+        else:
+            click.echo("  No OPENAI_API_KEY set!")
+            click.echo("  Either set OPENAI_API_KEY or switch to Ollama:")
+            click.echo("    export LLM_PROVIDER=ollama")
+
+
+@cli.command("scrape-url")
+@click.option("--source", required=True, help="Source adapter slug")
+@click.option("--url", required=True, help="URL to scrape")
+def scrape_single_url(source, url):
+    """Scrape a single URL using the specified adapter."""
+    from ingestion.adapters import get_adapter
+
+    adapter = get_adapter(source)
+    click.echo(f"Scraping {url} with {source} adapter...")
+
+    listing = adapter.extract_listing(url)
+    adapter.close()
+
+    if listing:
+        click.echo(f"✓ Extracted: {listing.title or 'Untitled'}")
+        click.echo(f"  Price: ¥{listing.price_jpy:,}" if listing.price_jpy else "  Price: N/A")
+        click.echo(f"  Prefecture: {listing.prefecture or 'N/A'}")
+        click.echo(f"  Images: {len(listing.image_urls or [])}")
+
+        # Try to save to DB
+        try:
+            import os
+            from dotenv import load_dotenv
+            load_dotenv()
+
+            from ingestion.storage import save_raw_listings
+            inserted, updated = save_raw_listings([listing])
+            click.echo(f"  Saved to DB: {inserted} new, {updated} updated")
+        except Exception as e:
+            click.echo(f"  DB save skipped: {e}")
+    else:
+        click.echo(f"✗ Failed to extract listing from {url}")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     cli()
+
