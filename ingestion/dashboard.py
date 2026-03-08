@@ -622,6 +622,61 @@ with tab_ai:
             time.sleep(3)
             st.rerun()
 
+    # ── Self-Healing Status ──
+    st.divider()
+    st.subheader("🔧 Self-Healing Status")
+
+    import json as _json
+    heal_state_path = SCRIPT_DIR / "heal_state.json"
+    if heal_state_path.exists():
+        try:
+            heal_state = _json.loads(heal_state_path.read_text())
+            sources = heal_state.get("sources", {})
+            disabled = {s: st for s, st in sources.items() if st.get("disabled")}
+            attempting = {s: st for s, st in sources.items()
+                         if st.get("fix_attempts", 0) > 0 and not st.get("disabled")}
+
+            if disabled:
+                for slug, state in disabled.items():
+                    st.error(f"🚫 {slug} — DISABLED "
+                             f"(after {state['fix_attempts']} failed fixes)")
+            if attempting:
+                for slug, state in attempting.items():
+                    st.warning(f"⚠️ {slug} — {state['fix_attempts']} fix attempts, "
+                               f"last: {(state.get('last_fix_attempt') or 'never')[:16]}")
+
+            # Show recent fixes
+            all_fixes = []
+            for slug, state in sources.items():
+                for fix in state.get("fixes_applied", []):
+                    fix["slug"] = slug
+                    all_fixes.append(fix)
+            all_fixes.sort(key=lambda f: f.get("timestamp", ""), reverse=True)
+            if all_fixes:
+                st.caption("Recent auto-fixes:")
+                for fix in all_fixes[:5]:
+                    st.text(f"  ✓ {fix['slug']} — {fix['type']} fix at {fix['timestamp']}")
+
+            if not disabled and not attempting and not all_fixes:
+                st.success("All scrapers healthy — no healing needed.")
+        except Exception as e:
+            st.caption(f"Could not read heal state: {e}")
+    else:
+        st.info("Self-healing not yet activated (runs after first scrape)")
+
+    # Alerts
+    alerts_path = SCRIPT_DIR / "logs" / "alerts.json"
+    if alerts_path.exists():
+        try:
+            alerts = _json.loads(alerts_path.read_text())
+            if alerts:
+                st.subheader("🚨 Alerts")
+                for alert in reversed(alerts[-10:]):
+                    st.warning(f"{alert.get('timestamp', '')[:16]} — "
+                               f"{alert.get('slug', '?')}: {alert.get('problem', '?')}")
+        except Exception:
+            pass
+
 
 # ── TAB 4: ADD URL ────────────────────────────────────────────
 with tab_add_url:

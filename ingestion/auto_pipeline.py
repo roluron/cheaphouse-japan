@@ -164,23 +164,77 @@ def check_ollama() -> bool:
 
 # ── Phase 2: Scrape ──────────────────────────────────────
 
+def _get_last_scrape_count(slug: str) -> int:
+    """Get listing count from the last scrape run in DB."""
+    try:
+        from ingestion.db import execute
+        rows = execute(
+            "SELECT listings_found FROM scrape_runs "
+            "WHERE source_slug = %s ORDER BY run_at DESC LIMIT 1",
+            (slug,)
+        )
+        return rows[0]["listings_found"] if rows else 0
+    except Exception:
+        return 0
+
+
+def _get_last_scrape_error(slug: str) -> str:
+    """Get error from the last scrape run."""
+    try:
+        from ingestion.db import execute
+        rows = execute(
+            "SELECT error_log FROM scrape_runs "
+            "WHERE source_slug = %s AND status != 'success' "
+            "ORDER BY run_at DESC LIMIT 1",
+            (slug,)
+        )
+        return rows[0]["error_log"] if rows and rows[0].get("error_log") else ""
+    except Exception:
+        return ""
+
+
 def run_scrape() -> None:
     log.info("=" * 60)
     log.info("PHASE 1: SCRAPING NEW LISTINGS")
     log.info("=" * 60)
+
+    scrape_results = []
 
     for source in SCRAPE_SOURCES:
         slug = source["slug"]
         limit = source["limit"]
         log.info(f"\n--- {slug} (limit {limit}) ---")
 
-        _run_cmd(
+        success = _run_cmd(
             [PYTHON, RUN_PY, "scrape", "--source", slug],
             timeout=3600,
             label=f"Scrape {slug}",
         )
+
+        listings_found = _get_last_scrape_count(slug)
+        scrape_results.append({
+            "slug": slug,
+            "success": success,
+            "listings_found": listings_found,
+            "error": _get_last_scrape_error(slug) if not success else "",
+        })
+
         # Pause between sources
         time.sleep(10)
+
+    # ── SELF-HEALING ──
+    log.info("")
+    log.info("=" * 60)
+    log.info("PHASE 1.5: SELF-HEALING CHECK")
+    log.info("=" * 60)
+
+    try:
+        from ingestion.self_heal import heal_after_scrape
+        heal_after_scrape(scrape_results)
+    except Exception as e:
+        log.error(f"Self-healing crashed (non-fatal): {e}")
+
+    log.info("")
 
 
 # ── Phase 3: Enrich ──────────────────────────────────────
