@@ -135,7 +135,7 @@ def _query_one(sql, params=None):
 def get_global_stats():
     return _query_one("""
         SELECT
-            COUNT(*) FILTER (WHERE listing_status = 'active' OR listing_status IS NULL) as active,
+            COUNT(*) FILTER (WHERE listing_status IN ('active', 'draft') OR listing_status IS NULL) as active,
             COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE) as today,
             COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE - INTERVAL '7 days') as week,
             COUNT(*) FILTER (WHERE enrichment_status = 'pending' OR enrichment_status IS NULL) as pending,
@@ -149,7 +149,7 @@ def get_global_stats():
 def get_country_stats(country):
     return _query_one("""
         SELECT
-            COUNT(*) FILTER (WHERE listing_status = 'active' OR listing_status IS NULL) as active,
+            COUNT(*) FILTER (WHERE listing_status IN ('active', 'draft') OR listing_status IS NULL) as active,
             COUNT(*) FILTER (WHERE created_at >= CURRENT_DATE) as today,
             COUNT(*) FILTER (WHERE enrichment_status = 'pending' OR enrichment_status IS NULL) as pending,
             COUNT(*) FILTER (WHERE enrichment_status = 'complete') as enriched
@@ -161,7 +161,7 @@ def get_country_stats(country):
 def get_listings_by_country():
     return _query("""
         SELECT country, COUNT(*) as count FROM properties
-        WHERE listing_status = 'active' OR listing_status IS NULL
+        WHERE listing_status IN ('active', 'draft') OR listing_status IS NULL
         GROUP BY country ORDER BY count DESC
     """)
 
@@ -181,7 +181,7 @@ def get_sources_for_country(country):
         SELECT primary_source_slug as source, COUNT(*) as count,
                MAX(created_at) as last_added
         FROM properties
-        WHERE country = %s AND (listing_status = 'active' OR listing_status IS NULL)
+        WHERE country = %s AND (listing_status IN ('active', 'draft') OR listing_status IS NULL)
         GROUP BY primary_source_slug ORDER BY count DESC
     """, (country,))
 
@@ -192,7 +192,7 @@ def get_price_distribution(country):
         SELECT price_jpy FROM properties
         WHERE country = %s AND price_jpy IS NOT NULL
           AND price_jpy > 0 AND price_jpy < 500000000
-          AND (listing_status = 'active' OR listing_status IS NULL)
+          AND (listing_status IN ('active', 'draft') OR listing_status IS NULL)
         LIMIT 1000
     """, (country,))
 
