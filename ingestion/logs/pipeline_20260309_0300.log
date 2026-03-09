@@ -1,0 +1,295 @@
+2026-03-09 03:00:00 [INFO] CheapHouse Japan Pipeline — 2026-03-09 03:00
+2026-03-09 03:00:00 [INFO] Python: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python
+2026-03-09 03:00:00 [INFO] Log: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260309_0300.log
+2026-03-09 03:00:00 [INFO] 
+2026-03-09 03:00:00 [INFO] ============================================================
+2026-03-09 03:00:00 [INFO] PHASE 1: SCRAPING NEW LISTINGS
+2026-03-09 03:00:00 [INFO] ============================================================
+2026-03-09 03:00:00 [INFO] 
+--- koryoya (limit 50) ---
+2026-03-09 03:00:00 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source koryoya
+2026-03-09 03:03:22 [INFO]   | ============================================================
+2026-03-09 03:03:22 [INFO]   |   Scraping: koryoya
+2026-03-09 03:03:22 [INFO]   | ============================================================
+2026-03-09 03:03:22 [INFO]   |   ✗ Error scraping koryoya: column "country" of relation "raw_listings" does not exist
+2026-03-09 03:03:22 [INFO]   | LINE 4:                     country,
+2026-03-09 03:03:22 [INFO]   |                             ^
+2026-03-09 03:03:22 [INFO]   Scrape koryoya completed successfully.
+2026-03-09 03:03:32 [INFO] 
+--- heritage-homes (limit 50) ---
+2026-03-09 03:03:32 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source heritage-homes
+2026-03-09 03:04:40 [INFO]   | ============================================================
+2026-03-09 03:04:40 [INFO]   |   Scraping: heritage-homes
+2026-03-09 03:04:40 [INFO]   | ============================================================
+2026-03-09 03:04:40 [INFO]   |   ✗ Error scraping heritage-homes: column "country" of relation "raw_listings" does not exist
+2026-03-09 03:04:40 [INFO]   | LINE 4:                     country,
+2026-03-09 03:04:40 [INFO]   |                             ^
+2026-03-09 03:04:40 [INFO]   Scrape heritage-homes completed successfully.
+2026-03-09 03:04:50 [INFO] 
+--- bukkenfan (limit 200) ---
+2026-03-09 03:04:50 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source bukkenfan
+2026-03-09 03:18:12 [INFO]   | ============================================================
+2026-03-09 03:18:12 [INFO]   |   Scraping: bukkenfan
+2026-03-09 03:18:12 [INFO]   | ============================================================
+2026-03-09 03:18:12 [INFO]   |   ✗ Error scraping bukkenfan: column "country" of relation "raw_listings" does not exist
+2026-03-09 03:18:12 [INFO]   | LINE 4:                     country,
+2026-03-09 03:18:12 [INFO]   |                             ^
+2026-03-09 03:18:12 [INFO]   Scrape bukkenfan completed successfully.
+2026-03-09 03:18:22 [INFO] 
+--- eikohome (limit 50) ---
+2026-03-09 03:18:22 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source eikohome
+2026-03-09 03:18:42 [INFO]   | ============================================================
+2026-03-09 03:18:42 [INFO]   |   Scraping: eikohome
+2026-03-09 03:18:42 [INFO]   | ============================================================
+2026-03-09 03:18:42 [INFO]   |   ✗ Error scraping eikohome: column "country" of relation "raw_listings" does not exist
+2026-03-09 03:18:42 [INFO]   | LINE 4:                     country,
+2026-03-09 03:18:42 [INFO]   |                             ^
+2026-03-09 03:18:42 [INFO]   Scrape eikohome completed successfully.
+2026-03-09 03:18:52 [INFO] 
+--- homes-co-jp (limit 500) ---
+2026-03-09 03:18:52 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source homes-co-jp
+2026-03-09 03:20:51 [INFO]   | ============================================================
+2026-03-09 03:20:51 [INFO]   |   Scraping: homes-co-jp
+2026-03-09 03:20:51 [INFO]   | ============================================================
+2026-03-09 03:20:51 [INFO]   |   ✗ Error scraping homes-co-jp: column "country" of relation "raw_listings" does not exist
+2026-03-09 03:20:51 [INFO]   | LINE 4:                     country,
+2026-03-09 03:20:51 [INFO]   |                             ^
+2026-03-09 03:20:51 [INFO]   Scrape homes-co-jp completed successfully.
+2026-03-09 03:21:01 [INFO] 
+--- athome-co-jp (limit 500) ---
+2026-03-09 03:21:01 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source athome-co-jp
+2026-03-09 03:21:25 [INFO]   | ============================================================
+2026-03-09 03:21:25 [INFO]   |   Scraping: athome-co-jp
+2026-03-09 03:21:25 [INFO]   | ============================================================
+2026-03-09 03:21:25 [INFO]   |   ✗ Error scraping athome-co-jp: column "country" of relation "raw_listings" does not exist
+2026-03-09 03:21:25 [INFO]   | LINE 4:                     country,
+2026-03-09 03:21:25 [INFO]   |                             ^
+2026-03-09 03:21:25 [INFO]   Scrape athome-co-jp completed successfully.
+2026-03-09 03:21:35 [INFO] 
+--- akiya-mart (limit 500) ---
+2026-03-09 03:21:35 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source akiya-mart
+2026-03-09 03:33:38 [INFO]   | ============================================================
+2026-03-09 03:33:38 [INFO]   |   Scraping: akiya-mart
+2026-03-09 03:33:38 [INFO]   | ============================================================
+2026-03-09 03:33:38 [INFO]   |   ✗ Error scraping akiya-mart: column "country" of relation "raw_listings" does not exist
+2026-03-09 03:33:38 [INFO]   | LINE 4:                     country,
+2026-03-09 03:33:38 [INFO]   |                             ^
+2026-03-09 03:33:38 [INFO]   Scrape akiya-mart completed successfully.
+2026-03-09 03:33:48 [INFO] 
+--- realestate-co-jp (limit 200) ---
+2026-03-09 03:33:48 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source realestate-co-jp
+2026-03-09 03:40:03 [INFO]   | ============================================================
+2026-03-09 03:40:03 [INFO]   |   Scraping: realestate-co-jp
+2026-03-09 03:40:03 [INFO]   | ============================================================
+2026-03-09 03:40:03 [INFO]   |   ⚠ No listings extracted from realestate-co-jp
+2026-03-09 03:40:03 [INFO]   Scrape realestate-co-jp completed successfully.
+2026-03-09 03:40:13 [INFO] 
+--- suumo-jp (limit 150) ---
+2026-03-09 03:40:13 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source suumo-jp
+2026-03-09 03:47:39 [INFO]   | ============================================================
+2026-03-09 03:47:39 [INFO]   |   Scraping: suumo-jp
+2026-03-09 03:47:39 [INFO]   | ============================================================
+2026-03-09 03:47:39 [INFO]   |   ✗ Error scraping suumo-jp: column "country" of relation "raw_listings" does not exist
+2026-03-09 03:47:39 [INFO]   | LINE 4:                     country,
+2026-03-09 03:47:39 [INFO]   |                             ^
+2026-03-09 03:47:39 [INFO]   Scrape suumo-jp completed successfully.
+2026-03-09 03:47:49 [INFO] 
+--- trademe-nz (limit 300) ---
+2026-03-09 03:47:49 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source trademe-nz
+2026-03-09 03:47:53 [INFO]   | ============================================================
+2026-03-09 03:47:53 [INFO]   |   Scraping: trademe-nz
+2026-03-09 03:47:53 [INFO]   | ============================================================
+2026-03-09 03:47:53 [INFO]   |   ⚠ No listings extracted from trademe-nz
+2026-03-09 03:47:53 [INFO]   Scrape trademe-nz completed successfully.
+2026-03-09 03:48:03 [INFO] 
+--- realestate-co-nz (limit 200) ---
+2026-03-09 03:48:03 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source realestate-co-nz
+2026-03-09 03:48:27 [INFO]   | ============================================================
+2026-03-09 03:48:27 [INFO]   |   Scraping: realestate-co-nz
+2026-03-09 03:48:27 [INFO]   | ============================================================
+2026-03-09 03:48:27 [INFO]   |   ⚠ No listings extracted from realestate-co-nz
+2026-03-09 03:48:27 [INFO]   Scrape realestate-co-nz completed successfully.
+2026-03-09 03:48:37 [INFO] 
+--- homes-co-nz (limit 200) ---
+2026-03-09 03:48:37 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source homes-co-nz
+2026-03-09 03:50:50 [INFO]   | ============================================================
+2026-03-09 03:50:50 [INFO]   |   Scraping: homes-co-nz
+2026-03-09 03:50:50 [INFO]   | ============================================================
+2026-03-09 03:50:50 [INFO]   |   ⚠ No listings extracted from homes-co-nz
+2026-03-09 03:50:50 [INFO]   Scrape homes-co-nz completed successfully.
+2026-03-09 03:51:00 [INFO] 
+--- oneroof-nz (limit 150) ---
+2026-03-09 03:51:00 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source oneroof-nz
+2026-03-09 03:52:48 [INFO]   | ============================================================
+2026-03-09 03:52:48 [INFO]   |   Scraping: oneroof-nz
+2026-03-09 03:52:48 [INFO]   | ============================================================
+2026-03-09 03:52:48 [INFO]   |   ⚠ No listings extracted from oneroof-nz
+2026-03-09 03:52:48 [INFO]   Scrape oneroof-nz completed successfully.
+2026-03-09 03:52:58 [INFO] 
+--- harcourts-nz (limit 150) ---
+2026-03-09 03:52:58 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source harcourts-nz
+2026-03-09 03:53:03 [INFO]   | ============================================================
+2026-03-09 03:53:03 [INFO]   |   Scraping: harcourts-nz
+2026-03-09 03:53:03 [INFO]   | ============================================================
+2026-03-09 03:53:03 [INFO]   |   ⚠ No listings extracted from harcourts-nz
+2026-03-09 03:53:03 [INFO]   Scrape harcourts-nz completed successfully.
+2026-03-09 03:53:13 [INFO] 
+--- green-acres-fr (limit 300) ---
+2026-03-09 03:53:13 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source green-acres-fr
+2026-03-09 03:53:29 [INFO]   | ============================================================
+2026-03-09 03:53:29 [INFO]   |   Scraping: green-acres-fr
+2026-03-09 03:53:29 [INFO]   | ============================================================
+2026-03-09 03:53:29 [INFO]   |   ⚠ No listings extracted from green-acres-fr
+2026-03-09 03:53:29 [INFO]   Scrape green-acres-fr completed successfully.
+2026-03-09 03:53:39 [INFO] 
+--- notaires-fr (limit 200) ---
+2026-03-09 03:53:39 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source notaires-fr
+2026-03-09 03:56:02 [INFO]   | ============================================================
+2026-03-09 03:56:02 [INFO]   |   Scraping: notaires-fr
+2026-03-09 03:56:02 [INFO]   | ============================================================
+2026-03-09 03:56:02 [INFO]   |   ⚠ No listings extracted from notaires-fr
+2026-03-09 03:56:02 [INFO]   Scrape notaires-fr completed successfully.
+2026-03-09 03:56:12 [INFO] 
+--- gate-away-it (limit 300) ---
+2026-03-09 03:56:12 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source gate-away-it
+2026-03-09 04:08:26 [INFO]   | ============================================================
+2026-03-09 04:08:26 [INFO]   |   Scraping: gate-away-it
+2026-03-09 04:08:26 [INFO]   | ============================================================
+2026-03-09 04:08:26 [INFO]   |   ⚠ No listings extracted from gate-away-it
+2026-03-09 04:08:26 [INFO]   Scrape gate-away-it completed successfully.
+2026-03-09 04:08:36 [INFO] 
+--- italian-houses (limit 200) ---
+2026-03-09 04:08:36 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source italian-houses
+2026-03-09 04:13:19 [INFO]   | ============================================================
+2026-03-09 04:13:19 [INFO]   |   Scraping: italian-houses
+2026-03-09 04:13:19 [INFO]   | ============================================================
+2026-03-09 04:13:19 [INFO]   |   ⚠ No listings extracted from italian-houses
+2026-03-09 04:13:19 [INFO]   Scrape italian-houses completed successfully.
+2026-03-09 04:13:29 [INFO] 
+--- 1euro-houses (limit 50) ---
+2026-03-09 04:13:29 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source 1euro-houses
+2026-03-09 04:17:04 [INFO]   | ============================================================
+2026-03-09 04:17:04 [INFO]   |   Scraping: 1euro-houses
+2026-03-09 04:17:04 [INFO]   | ============================================================
+2026-03-09 04:17:04 [INFO]   |   ✗ Error scraping 1euro-houses: column "country" of relation "raw_listings" does not exist
+2026-03-09 04:17:04 [INFO]   | LINE 4:                     country,
+2026-03-09 04:17:04 [INFO]   |                             ^
+2026-03-09 04:17:04 [INFO]   Scrape 1euro-houses completed successfully.
+2026-03-09 04:17:14 [INFO] 
+--- idealista-pt (limit 200) ---
+2026-03-09 04:17:14 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source idealista-pt
+2026-03-09 04:20:25 [INFO]   | ============================================================
+2026-03-09 04:20:25 [INFO]   |   Scraping: idealista-pt
+2026-03-09 04:20:25 [INFO]   | ============================================================
+2026-03-09 04:20:25 [INFO]   |   ⚠ No listings extracted from idealista-pt
+2026-03-09 04:20:25 [INFO]   Scrape idealista-pt completed successfully.
+2026-03-09 04:20:35 [INFO] 
+--- imovirtual-pt (limit 200) ---
+2026-03-09 04:20:35 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source imovirtual-pt
+2026-03-09 04:23:55 [INFO]   | ============================================================
+2026-03-09 04:23:55 [INFO]   |   Scraping: imovirtual-pt
+2026-03-09 04:23:55 [INFO]   | ============================================================
+2026-03-09 04:23:55 [INFO]   |   ✗ Error scraping imovirtual-pt: column "country" of relation "raw_listings" does not exist
+2026-03-09 04:23:55 [INFO]   | LINE 4:                     country,
+2026-03-09 04:23:55 [INFO]   |                             ^
+2026-03-09 04:23:55 [INFO]   Scrape imovirtual-pt completed successfully.
+2026-03-09 04:24:05 [INFO] 
+--- blocket-se (limit 200) ---
+2026-03-09 04:24:05 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source blocket-se
+2026-03-09 04:24:09 [INFO]   | ============================================================
+2026-03-09 04:24:09 [INFO]   |   Scraping: blocket-se
+2026-03-09 04:24:09 [INFO]   | ============================================================
+2026-03-09 04:24:09 [INFO]   |   ⚠ No listings extracted from blocket-se
+2026-03-09 04:24:09 [INFO]   Scrape blocket-se completed successfully.
+2026-03-09 04:24:19 [INFO] 
+--- hemnet-se (limit 150) ---
+2026-03-09 04:24:19 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source hemnet-se
+2026-03-09 04:48:32 [INFO]   | ============================================================
+2026-03-09 04:48:32 [INFO]   |   Scraping: hemnet-se
+2026-03-09 04:48:32 [INFO]   | ============================================================
+2026-03-09 04:48:32 [INFO]   |   ✗ Error scraping hemnet-se: column "country" of relation "raw_listings" does not exist
+2026-03-09 04:48:32 [INFO]   | LINE 4:                     country,
+2026-03-09 04:48:32 [INFO]   |                             ^
+2026-03-09 04:48:32 [INFO]   Scrape hemnet-se completed successfully.
+2026-03-09 04:48:42 [INFO] 
+--- immobiliare-it (limit 100) ---
+2026-03-09 04:48:42 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source immobiliare-it
+2026-03-09 04:50:43 [INFO]   | ============================================================
+2026-03-09 04:50:43 [INFO]   |   Scraping: immobiliare-it
+2026-03-09 04:50:43 [INFO]   | ============================================================
+2026-03-09 04:50:43 [INFO]   |   ⚠ No listings extracted from immobiliare-it
+2026-03-09 04:50:43 [INFO]   Scrape immobiliare-it completed successfully.
+2026-03-09 04:50:54 [INFO] 
+--- cheap-old-houses-us (limit 200) ---
+2026-03-09 04:50:54 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source cheap-old-houses-us
+2026-03-09 04:50:56 [INFO]   | ============================================================
+2026-03-09 04:50:56 [INFO]   |   Scraping: cheap-old-houses-us
+2026-03-09 04:50:56 [INFO]   | ============================================================
+2026-03-09 04:50:56 [INFO]   |   ⚠ No listings extracted from cheap-old-houses-us
+2026-03-09 04:50:56 [INFO]   Scrape cheap-old-houses-us completed successfully.
+2026-03-09 04:51:06 [INFO] 
+--- redfin-us (limit 500) ---
+2026-03-09 04:51:06 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source redfin-us
+2026-03-09 04:52:03 [INFO]   | ============================================================
+2026-03-09 04:52:03 [INFO]   |   Scraping: redfin-us
+2026-03-09 04:52:03 [INFO]   | ============================================================
+2026-03-09 04:52:03 [INFO]   |   ⚠ No listings extracted from redfin-us
+2026-03-09 04:52:03 [INFO]   Scrape redfin-us completed successfully.
+2026-03-09 04:52:13 [INFO] 
+--- realtor-com (limit 300) ---
+2026-03-09 04:52:13 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source realtor-com
+2026-03-09 04:57:28 [INFO]   | ============================================================
+2026-03-09 04:57:28 [INFO]   |   Scraping: realtor-com
+2026-03-09 04:57:28 [INFO]   | ============================================================
+2026-03-09 04:57:28 [INFO]   |   ⚠ No listings extracted from realtor-com
+2026-03-09 04:57:28 [INFO]   Scrape realtor-com completed successfully.
+2026-03-09 04:57:38 [INFO] 
+--- landwatch-us (limit 300) ---
+2026-03-09 04:57:38 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source landwatch-us
+2026-03-09 04:59:49 [INFO]   | ============================================================
+2026-03-09 04:59:49 [INFO]   |   Scraping: landwatch-us
+2026-03-09 04:59:49 [INFO]   | ============================================================
+2026-03-09 04:59:49 [INFO]   |   ⚠ No listings extracted from landwatch-us
+2026-03-09 04:59:49 [INFO]   Scrape landwatch-us completed successfully.
+2026-03-09 04:59:59 [INFO] 
+--- auction-com (limit 200) ---
+2026-03-09 04:59:59 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source auction-com
+2026-03-09 05:02:07 [INFO]   | ============================================================
+2026-03-09 05:02:07 [INFO]   |   Scraping: auction-com
+2026-03-09 05:02:07 [INFO]   | ============================================================
+2026-03-09 05:02:07 [INFO]   |   ⚠ No listings extracted from auction-com
+2026-03-09 05:02:07 [INFO]   Scrape auction-com completed successfully.
+2026-03-09 05:02:17 [INFO] 
+2026-03-09 05:02:17 [INFO] ============================================================
+2026-03-09 05:02:17 [INFO] PHASE 1.5: SELF-HEALING CHECK
+2026-03-09 05:02:17 [INFO] ============================================================
+2026-03-09 05:02:17 [ERROR] Self-healing crashed (non-fatal): No module named 'ingestion'
+2026-03-09 05:02:17 [INFO] 
+2026-03-09 05:02:17 [INFO] ============================================================
+2026-03-09 05:02:17 [INFO] PHASE 2: ENRICHMENT PIPELINE (Ollama LLM)
+2026-03-09 05:02:17 [INFO] ============================================================
+2026-03-09 05:02:17 [INFO]   Ollama running. Models: qwen2.5:14b, severus:latest
+2026-03-09 05:02:17 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py pipeline --limit 500
+2026-03-09 09:00:14 [INFO]   | 🚀 Running full enrichment pipeline...
+2026-03-09 09:00:14 [INFO]   | 
+2026-03-09 09:00:14 [INFO]   | 
+2026-03-09 09:00:14 [INFO]   | 📊 Pipeline Results:
+2026-03-09 09:00:14 [INFO]   |   normalized                0
+2026-03-09 09:00:14 [INFO]   |   geocoded                  0
+2026-03-09 09:00:14 [INFO]   |   translated                500
+2026-03-09 09:00:14 [INFO]   |   fingerprinted             0
+2026-03-09 09:00:14 [INFO]   |   duplicate_clusters        55
+2026-03-09 09:00:14 [INFO]   |   hazard_enriched           280
+2026-03-09 09:00:14 [INFO]   |   lifestyle_tagged          282
+2026-03-09 09:00:14 [INFO]   |   quality_scored            280
+2026-03-09 09:00:14 [INFO]   |   what_to_know              50
+2026-03-09 09:00:14 [INFO]   Enrichment pipeline completed successfully.
+2026-03-09 09:00:14 [INFO] ============================================================
+2026-03-09 09:00:14 [INFO] PHASE 3: FRESHNESS CHECK
+2026-03-09 09:00:14 [INFO] ============================================================
+2026-03-09 09:00:14 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py check-freshness
+2026-03-09 09:00:16 [INFO]   | Error: SUPABASE_URL and SUPABASE_SERVICE_KEY must be set
+2026-03-09 09:00:16 [ERROR]   Freshness check failed (exit 1)
+2026-03-09 09:00:16 [INFO] 
+Pipeline finished in 6h 0m
+2026-03-09 09:00:16 [INFO] Log saved to: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260309_0300.log

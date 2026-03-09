@@ -1,0 +1,29 @@
+{
+  "sources": {
+    "realestate-co-jp": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "koryoya": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": null,
+      "fixes_applied": []
+    },
+    "bukkenfan": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "timeout after 60s",
+      "fixes_applied": []
+    }
+  },
+  "last_run": "2026-03-08T22:03:03.189515"
+}

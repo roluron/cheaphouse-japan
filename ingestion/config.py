@@ -10,9 +10,6 @@ load_dotenv()
 # ── Database ─────────────────────────────────────────────
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
-# ── OpenAI ───────────────────────────────────────────────
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
-
 # ── Scraping defaults ────────────────────────────────────
 SCRAPE_DELAY_SECONDS = float(os.environ.get("SCRAPE_DELAY_SECONDS", "2"))
 HTTP_TIMEOUT_SECONDS = 30
@@ -22,9 +19,23 @@ USER_AGENT = (
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 )
 
+# ── LLM Provider Configuration ───────────────────────────
+# Set LLM_PROVIDER to "ollama" for local (free) or "openai" for cloud
+LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "ollama")  # Default: Ollama (free)
+
+# OpenAI settings (cloud, paid)
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+
+# Ollama settings (local, free)
+OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:14b")
+# Good alternatives: "llama3.1:8b", "mistral:7b", "gemma2:9b", "qwen2.5:7b"
+# For best Japanese translation: "qwen2.5:14b" (strong multilingual)
+# For speed on weaker hardware: "qwen2.5:7b" or "llama3.1:8b"
+
 # ── LLM defaults ────────────────────────────────────────
 LLM_BATCH_SIZE = int(os.environ.get("LLM_BATCH_SIZE", "10"))
-LLM_MODEL = "gpt-4o-mini"  # cheap and fast for translation/tagging
 
 # ── Prefectures (canonical romanized names) ──────────────
 PREFECTURES = [

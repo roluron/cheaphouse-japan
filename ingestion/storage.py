@@ -36,6 +36,7 @@ def save_raw_listings(listings: list[RawListing]) -> tuple[int, int]:
                 """
                 INSERT INTO raw_listings (
                     source_slug, source_listing_id, source_url,
+                    country,
                     title, description,
                     price_raw, price_jpy,
                     prefecture, city, address_raw,
@@ -48,6 +49,7 @@ def save_raw_listings(listings: list[RawListing]) -> tuple[int, int]:
                     fetched_at, processing_status
                 ) VALUES (
                     %(source_slug)s, %(source_listing_id)s, %(source_url)s,
+                    %(country)s,
                     %(title)s, %(description)s,
                     %(price_raw)s, %(price_jpy)s,
                     %(prefecture)s, %(city)s, %(address_raw)s,
@@ -84,6 +86,7 @@ def save_raw_listings(listings: list[RawListing]) -> tuple[int, int]:
                     "source_slug": listing.source_slug,
                     "source_listing_id": source_listing_id,
                     "source_url": listing.source_url,
+                    "country": listing.country,
                     "title": listing.title,
                     "description": listing.description,
                     "price_raw": listing.price_raw,

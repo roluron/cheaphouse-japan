@@ -15,7 +15,8 @@ import logging
 import time
 from typing import Optional
 
-from ingestion.config import LLM_BATCH_SIZE, LLM_MODEL, OPENAI_API_KEY
+from ingestion.config import LLM_BATCH_SIZE, LLM_PROVIDER
+from ingestion.llm_client import llm_chat
 from ingestion.db import execute, get_cursor
 
 logger = logging.getLogger(__name__)
@@ -23,35 +24,35 @@ logger = logging.getLogger(__name__)
 # ── Living Profile definitions ───────────────────────────
 LIVING_PROFILES = {
     "pet-friendly": {
-        "label": "🐕 Dog-Friendly Escape",
+        "label": "Dog-Friendly Escape",
         "description": "Good for pet owners — outdoor space, detached, rural or suburban",
     },
     "artist-retreat": {
-        "label": "🎨 Artist Retreat",
+        "label": "Artist Retreat",
         "description": "Creative potential — large rooms, scenic location, quiet surroundings",
     },
     "remote-work": {
-        "label": "💻 Remote Work Hideaway",
+        "label": "Remote Work Hideaway",
         "description": "Suitable for working remotely — multiple rooms, connected area",
     },
     "low-renovation": {
-        "label": "🔧 Low-Stress Move-In",
+        "label": "Low-Stress Move-In",
         "description": "Relatively move-in ready — newer build or good condition",
     },
     "near-station": {
-        "label": "🚉 Near Station",
+        "label": "Near Station",
         "description": "Walking distance to a train station",
     },
     "rural-retreat": {
-        "label": "🏔️ Mountain / Rural Base",
+        "label": "Mountain / Rural Base",
         "description": "Secluded countryside or mountain setting",
     },
     "family-ready": {
-        "label": "👨‍👩‍👧 Family Ready",
+        "label": "Family Ready",
         "description": "Suitable for families — multiple bedrooms, near services",
     },
     "retirement": {
-        "label": "🏖️ Retirement Pace",
+        "label": "Retirement Pace",
         "description": "Calm, affordable, accessible for retirees",
     },
 }
@@ -97,8 +98,7 @@ def tag_lifestyle_all(limit: int = 500) -> int:
         logger.info("No properties need lifestyle tagging.")
         return 0
 
-    logger.info(f"Tagging {len(rows)} properties...")
-    has_llm = bool(OPENAI_API_KEY)
+    logger.info(f"Tagging {len(rows)} properties (provider: {LLM_PROVIDER})...")
     count = 0
 
     for i, row in enumerate(rows):
@@ -106,17 +106,16 @@ def tag_lifestyle_all(limit: int = 500) -> int:
             # Pass 1: Rule-based tags
             tags = _rule_based_tags(row)
 
-            # Pass 2: LLM-based tags (if available)
-            if has_llm:
-                llm_tags = _llm_tags(row)
-                tags = _merge_tags(tags, llm_tags)
+            # Pass 2: LLM-based tags
+            llm_tags = _llm_tags(row)
+            tags = _merge_tags(tags, llm_tags)
 
             _save_tags(row["id"], tags)
             count += 1
         except Exception as e:
             logger.error(f"Error tagging property {row['id']}: {e}")
 
-        if has_llm and (i + 1) % LLM_BATCH_SIZE == 0:
+        if (i + 1) % LLM_BATCH_SIZE == 0:
             time.sleep(1)
 
     logger.info(f"Tagged {count} properties.")
@@ -216,10 +215,6 @@ def _rule_based_tags(row: dict) -> list[dict]:
 
 def _llm_tags(row: dict) -> list[dict]:
     """Get contextual tags from LLM analysis."""
-    from openai import OpenAI
-
-    client = OpenAI(api_key=OPENAI_API_KEY)
-
     listing_context = {
         "title": row.get("title_en") or row.get("original_title"),
         "description": (row.get("summary_en") or row.get("original_description") or "")[:1000],
@@ -235,18 +230,14 @@ def _llm_tags(row: dict) -> list[dict]:
     }
 
     try:
-        response = client.chat.completions.create(
-            model=LLM_MODEL,
-            messages=[
-                {"role": "system", "content": TAG_PROMPT},
-                {"role": "user", "content": json.dumps(listing_context, ensure_ascii=False)},
-            ],
-            response_format={"type": "json_object"},
+        result = llm_chat(
+            system_prompt=TAG_PROMPT,
+            user_content=json.dumps(listing_context, ensure_ascii=False),
             temperature=0.2,
             max_tokens=400,
+            json_mode=True,
         )
 
-        result = json.loads(response.choices[0].message.content)
         llm_tags = []
         for t in result.get("tags", []):
             if t.get("tag") in LIVING_PROFILES:

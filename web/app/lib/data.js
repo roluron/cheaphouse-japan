@@ -399,14 +399,14 @@ export const PREFECTURES = [
 ];
 
 export const LIVING_PROFILES = {
-    "pet-friendly": { label: "🐕 Dog-Friendly", color: "green" },
-    "artist-retreat": { label: "🎨 Artist Retreat", color: "violet" },
-    "remote-work": { label: "💻 Remote Work", color: "blue" },
-    "low-renovation": { label: "🔧 Low-Stress Move-In", color: "green" },
-    "near-station": { label: "🚉 Near Station", color: "blue" },
-    "rural-retreat": { label: "🏔️ Rural Retreat", color: "green" },
-    "family-ready": { label: "👨‍👩‍👧 Family Ready", color: "amber" },
-    "retirement": { label: "🏖️ Retirement Pace", color: "amber" },
+    "pet-friendly": { label: "Dog-Friendly", color: "green" },
+    "artist-retreat": { label: "Artist Retreat", color: "blue" },
+    "remote-work": { label: "Remote Work", color: "blue" },
+    "low-renovation": { label: "Low-Stress Move-In", color: "green" },
+    "near-station": { label: "Near Station", color: "blue" },
+    "rural-retreat": { label: "Rural Retreat", color: "green" },
+    "family-ready": { label: "Family Ready", color: "amber" },
+    "retirement": { label: "Retirement Pace", color: "amber" },
 };
 
 export function getProperty(slug) {

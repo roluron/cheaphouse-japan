@@ -1,33 +1,38 @@
-import { Inter, Outfit } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
+import SmoothScroll from "./components/SmoothScroll";
 import "./globals.css";
 
-const inter = Inter({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-serif",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata = {
-  title: "CheapHouse Japan — Find Your Dream Home in Japan",
+  title: "CheapHouse — Find Dream Homes Around the World",
   description:
-    "The decision platform for international buyers. Discover, compare, and decide on affordable homes and akiya in Japan with hazard intelligence, lifestyle matching, and honest insights.",
-  keywords: ["Japan", "real estate", "akiya", "cheap houses", "buy house Japan", "vacant houses"],
+    "The decision platform for international home buyers. Discover, compare, and decide on affordable homes worldwide.",
+  keywords: ["real estate", "cheap houses", "akiya", "Japan", "affordable homes", "international property"],
   openGraph: {
-    title: "CheapHouse Japan — Find Your Dream Home in Japan",
-    description: "The decision platform for international buyers looking for affordable homes in Japan.",
+    title: "CheapHouse — Find Dream Homes Around the World",
+    description: "The decision platform for international buyers. Discover affordable homes worldwide.",
     type: "website",
   },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
-      <body>{children}</body>
+    <html lang="en" className={playfair.variable} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('ch-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}})()`,
+          }}
+        />
+      </head>
+      <body>
+        <SmoothScroll>{children}</SmoothScroll>
+      </body>
     </html>
   );
 }

@@ -12,7 +12,8 @@ import logging
 import time
 from typing import Optional
 
-from ingestion.config import LLM_MODEL, OPENAI_API_KEY
+from ingestion.config import LLM_PROVIDER
+from ingestion.llm_client import llm_chat
 from ingestion.db import execute, get_cursor
 
 logger = logging.getLogger(__name__)
@@ -142,10 +143,6 @@ def generate_what_to_know_all(limit: int = 50) -> int:
     Generate "What to know" sections for properties that don't have them.
     Returns count processed.
     """
-    if not OPENAI_API_KEY:
-        logger.warning("OPENAI_API_KEY not set. Running rule-based What-to-Know only.")
-        return _rule_based_what_to_know_all(limit)
-
     rows = execute(
         """
         SELECT id, title_en, original_title, summary_en, original_description,
@@ -165,14 +162,12 @@ def generate_what_to_know_all(limit: int = 50) -> int:
         logger.info("No properties need What-to-Know generation.")
         return 0
 
-    logger.info(f"Generating What-to-Know for {len(rows)} properties...")
-    from openai import OpenAI
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    logger.info(f"Generating What-to-Know for {len(rows)} properties (provider: {LLM_PROVIDER})...")
     count = 0
 
     for i, row in enumerate(rows):
         try:
-            result = _generate_wtk_llm(client, row)
+            result = _generate_wtk_llm(row)
             _save_wtk(row["id"], result)
             count += 1
         except Exception as e:
@@ -193,7 +188,7 @@ def generate_what_to_know_all(limit: int = 50) -> int:
     return count
 
 
-def _generate_wtk_llm(client, row: dict) -> dict:
+def _generate_wtk_llm(row: dict) -> dict:
     """Generate What-to-Know via LLM."""
     # Parse hazard scores for context
     hazard = row.get("hazard_scores")
@@ -221,18 +216,13 @@ def _generate_wtk_llm(client, row: dict) -> dict:
         "tsunami_risk": hazard.get("tsunami", {}).get("level", "unknown"),
     }
 
-    response = client.chat.completions.create(
-        model=LLM_MODEL,
-        messages=[
-            {"role": "system", "content": WHAT_TO_KNOW_PROMPT},
-            {"role": "user", "content": json.dumps(listing_data, ensure_ascii=False)},
-        ],
-        response_format={"type": "json_object"},
+    return llm_chat(
+        system_prompt=WHAT_TO_KNOW_PROMPT,
+        user_content=json.dumps(listing_data, ensure_ascii=False),
         temperature=0.3,
         max_tokens=600,
+        json_mode=True,
     )
-
-    return json.loads(response.choices[0].message.content)
 
 
 def _rule_based_wtk(row: dict) -> dict:

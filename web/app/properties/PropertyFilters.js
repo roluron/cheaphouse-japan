@@ -21,12 +21,25 @@ const PRICE_RANGES = [
     { value: "5000000-99999999", label: "Over ¥5M" },
 ];
 
+const SAFETY_OPTIONS = [
+    { value: "all", label: "All Properties" },
+    { value: "low-only", label: "Low Risk Only" },
+    { value: "no-high", label: "No High Risk" },
+];
+
+function getHazardLevels(property) {
+    const scores = property.hazard_scores;
+    if (!scores || typeof scores !== "object") return [];
+    return Object.values(scores).map(h => h?.level || "none");
+}
+
 export default function PropertyFilters({ properties }) {
     const [prefecture, setPrefecture] = useState("All Prefectures");
     const [priceRange, setPriceRange] = useState("all");
     const [sort, setSort] = useState("quality-desc");
     const [lifestyleFilter, setLifestyleFilter] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [safetyFilter, setSafetyFilter] = useState("all");
 
     const filtered = useMemo(() => {
         let results = [...properties];
@@ -47,6 +60,19 @@ export default function PropertyFilters({ properties }) {
             results = results.filter((p) => {
                 const tags = p.lifestyle_tags || [];
                 return tags.some((t) => t.tag === lifestyleFilter);
+            });
+        }
+
+        // Safety filter
+        if (safetyFilter === "low-only") {
+            results = results.filter((p) => {
+                const levels = getHazardLevels(p);
+                return levels.length === 0 || levels.every(l => l === "none" || l === "low");
+            });
+        } else if (safetyFilter === "no-high") {
+            results = results.filter((p) => {
+                const levels = getHazardLevels(p);
+                return !levels.includes("high");
             });
         }
 
@@ -77,7 +103,7 @@ export default function PropertyFilters({ properties }) {
         }
 
         return results;
-    }, [properties, prefecture, priceRange, sort, lifestyleFilter, searchQuery]);
+    }, [properties, prefecture, priceRange, sort, lifestyleFilter, searchQuery, safetyFilter]);
 
     return (
         <>
@@ -85,7 +111,7 @@ export default function PropertyFilters({ properties }) {
                 <input
                     className="filter-input"
                     type="text"
-                    placeholder="🔍 Search by city, prefecture..."
+                    placeholder="Search by city, prefecture..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{ minWidth: 200, flex: 1 }}
@@ -99,6 +125,11 @@ export default function PropertyFilters({ properties }) {
                 <select className="filter-select" value={priceRange} onChange={(e) => setPriceRange(e.target.value)} id="filter-price">
                     {PRICE_RANGES.map((r) => (
                         <option key={r.value} value={r.value}>{r.label}</option>
+                    ))}
+                </select>
+                <select className="filter-select" value={safetyFilter} onChange={(e) => setSafetyFilter(e.target.value)} id="filter-safety">
+                    {SAFETY_OPTIONS.map((s) => (
+                        <option key={s.value} value={s.value}>{s.label}</option>
                     ))}
                 </select>
                 <select className="filter-select" value={lifestyleFilter} onChange={(e) => setLifestyleFilter(e.target.value)} id="filter-lifestyle">
@@ -122,7 +153,7 @@ export default function PropertyFilters({ properties }) {
                 </div>
             ) : (
                 <div style={{ textAlign: "center", padding: 80, color: "var(--text-muted)" }}>
-                    <div style={{ fontSize: 48, marginBottom: 16 }}>🏚️</div>
+                    <div style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 16 }}>—</div>
                     <h3 style={{ marginBottom: 8 }}>No properties match your filters</h3>
                     <p>Try broadening your search or clearing some filters.</p>
                 </div>

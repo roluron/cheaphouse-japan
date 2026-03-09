@@ -25,6 +25,7 @@ class RawListing:
 
     # ── Source identification ────────────────────────────
     source_listing_id: Optional[str] = None
+    country: str = "japan"  # "japan", "france", "italy", "portugal", "sweden"
 
     # ── Description ──────────────────────────────────────
     description: Optional[str] = None

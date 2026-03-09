@@ -1,0 +1,74 @@
+2026-03-08 10:39:26 [INFO] CheapHouse Japan Pipeline — 2026-03-08 10:39
+2026-03-08 10:39:26 [INFO] Python: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python
+2026-03-08 10:39:26 [INFO] Log: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260308_1039.log
+2026-03-08 10:39:26 [INFO] 
+2026-03-08 10:39:26 [INFO] ============================================================
+2026-03-08 10:39:26 [INFO] PHASE 1: SCRAPING NEW LISTINGS
+2026-03-08 10:39:26 [INFO] ============================================================
+2026-03-08 10:39:26 [INFO] 
+--- koryoya (limit 50) ---
+2026-03-08 10:39:26 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source koryoya
+2026-03-08 10:40:49 [INFO]   | ============================================================
+2026-03-08 10:40:49 [INFO]   |   Scraping: koryoya
+2026-03-08 10:40:49 [INFO]   | ============================================================
+2026-03-08 10:40:49 [INFO]   |   ✓ 5 listings extracted (5 new, 0 updated) in 79133ms
+2026-03-08 10:40:49 [INFO]   Scrape koryoya completed successfully.
+2026-03-08 10:40:59 [INFO] 
+--- heritage-homes (limit 50) ---
+2026-03-08 10:40:59 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source heritage-homes
+2026-03-08 10:42:07 [INFO]   | ============================================================
+2026-03-08 10:42:07 [INFO]   |   Scraping: heritage-homes
+2026-03-08 10:42:07 [INFO]   | ============================================================
+2026-03-08 10:42:07 [INFO]   |   ✓ 17 listings extracted (17 new, 0 updated) in 63877ms
+2026-03-08 10:42:07 [INFO]   Scrape heritage-homes completed successfully.
+2026-03-08 10:42:17 [INFO] 
+--- bukkenfan (limit 200) ---
+2026-03-08 10:42:17 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source bukkenfan
+2026-03-08 10:42:23 [INFO]   | ============================================================
+2026-03-08 10:42:23 [INFO]   |   Scraping: bukkenfan
+2026-03-08 10:42:23 [INFO]   | ============================================================
+2026-03-08 10:42:23 [INFO]   |   ✗ Error scraping bukkenfan: invalid literal for int() with base 10: '9280万円'
+2026-03-08 10:42:23 [INFO]   Scrape bukkenfan completed successfully.
+2026-03-08 10:42:33 [INFO] 
+--- eikohome (limit 50) ---
+2026-03-08 10:42:33 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source eikohome
+2026-03-08 10:42:52 [INFO]   | ============================================================
+2026-03-08 10:42:52 [INFO]   |   Scraping: eikohome
+2026-03-08 10:42:52 [INFO]   | ============================================================
+2026-03-08 10:42:52 [INFO]   |   ✓ 8 listings extracted (8 new, 0 updated) in 16101ms
+2026-03-08 10:42:52 [INFO]   Scrape eikohome completed successfully.
+2026-03-08 10:43:02 [INFO] 
+--- homes-co-jp (limit 500) ---
+2026-03-08 10:43:02 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source homes-co-jp
+2026-03-08 10:45:18 [INFO]   | ============================================================
+2026-03-08 10:45:18 [INFO]   |   Scraping: homes-co-jp
+2026-03-08 10:45:18 [INFO]   | ============================================================
+2026-03-08 10:45:18 [INFO]   |   ✓ 183 listings extracted (183 new, 0 updated) in 114679ms
+2026-03-08 10:45:18 [INFO]   Scrape homes-co-jp completed successfully.
+2026-03-08 10:45:28 [INFO] 
+--- athome-co-jp (limit 500) ---
+2026-03-08 10:45:28 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source athome-co-jp
+2026-03-08 10:45:58 [INFO]   | ============================================================
+2026-03-08 10:45:58 [INFO]   |   Scraping: athome-co-jp
+2026-03-08 10:45:58 [INFO]   | ============================================================
+2026-03-08 10:45:58 [INFO]   |   ✓ 90 listings extracted (90 new, 0 updated) in 19520ms
+2026-03-08 10:45:58 [INFO]   Scrape athome-co-jp completed successfully.
+2026-03-08 10:46:08 [INFO] 
+--- akiya-mart (limit 500) ---
+2026-03-08 10:46:08 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source akiya-mart
+2026-03-08 10:57:50 [INFO]   | ============================================================
+2026-03-08 10:57:50 [INFO]   |   Scraping: akiya-mart
+2026-03-08 10:57:50 [INFO]   | ============================================================
+2026-03-08 10:57:50 [INFO]   |   ✓ 477 listings extracted (477 new, 0 updated) in 654848ms
+2026-03-08 10:57:50 [INFO]   Scrape akiya-mart completed successfully.
+2026-03-08 10:58:00 [INFO] 
+--- realestate-co-jp (limit 200) ---
+2026-03-08 10:58:00 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source realestate-co-jp
+2026-03-08 11:01:14 [INFO]   | ============================================================
+2026-03-08 11:01:14 [INFO]   |   Scraping: realestate-co-jp
+2026-03-08 11:01:14 [INFO]   | ============================================================
+2026-03-08 11:01:14 [INFO]   |   ⚠ No listings extracted from realestate-co-jp
+2026-03-08 11:01:14 [INFO]   Scrape realestate-co-jp completed successfully.
+2026-03-08 11:01:24 [INFO] 
+--- suumo-jp (limit 150) ---
+2026-03-08 11:01:24 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source suumo-jp

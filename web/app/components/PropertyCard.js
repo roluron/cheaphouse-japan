@@ -1,156 +1,116 @@
+"use client";
+
 import Link from "next/link";
-import { LIVING_PROFILES, formatPrice, formatArea } from "../lib/data";
+import { convertPrice, formatCurrency } from "../lib/currencies";
+import { LIVING_PROFILES } from "../lib/data";
+import { useState, useEffect } from "react";
+
+function getWorstHazard(hazard_scores) {
+    if (!hazard_scores || typeof hazard_scores !== "object") return null;
+    let worst = null;
+    let worstType = null;
+    const levels = { none: 0, low: 1, moderate: 2, high: 3 };
+    for (const [type, data] of Object.entries(hazard_scores)) {
+        const level = data?.level || "none";
+        if (!worst || (levels[level] || 0) > (levels[worst] || 0)) {
+            worst = level;
+            worstType = type;
+        }
+    }
+    return { level: worst, type: worstType };
+}
 
 export default function PropertyCard({ property }) {
+    const [currency, setCurrency] = useState("USD");
+
+    useEffect(() => {
+        setCurrency(localStorage.getItem("ch-currency") || "USD");
+        const handler = (e) => setCurrency(e.detail);
+        window.addEventListener("currencyChange", handler);
+        return () => window.removeEventListener("currencyChange", handler);
+    }, []);
+
     const {
-        id,
         slug,
         title_en,
         original_title,
-        price_jpy,
-        price_display,
         prefecture,
         city,
-        building_sqm,
-        land_sqm,
-        rooms,
-        year_built,
+        price_jpy,
         thumbnail_url,
         images,
+        hazard_scores,
         quality_score,
         lifestyle_tags,
-        freshness_label,
-        hazard_scores,
     } = property;
 
     const displayTitle = title_en || original_title || "Untitled Property";
-    const displaySlug = slug || id;
-    const imgUrl = thumbnail_url ||
-        (Array.isArray(images) && images.length > 0 ? (typeof images[0] === "string" ? images[0] : images[0]?.url) : null);
-
-    const qualityColor =
-        (quality_score || 0) >= 0.7
-            ? "var(--accent-green)"
-            : (quality_score || 0) >= 0.5
-                ? "var(--accent-amber)"
-                : "var(--accent-rose)";
-
-    const worstHazard = hazard_scores
-        ? Object.values(hazard_scores).reduce((worst, h) => {
-            const levels = { none: 0, low: 1, moderate: 2, high: 3 };
-            return (levels[h.level] || 0) > (levels[worst.level] || 0) ? h : worst;
-        }, { level: "none" })
+    const imageUrl = thumbnail_url || (Array.isArray(images) && images[0]?.url) || null;
+    const priceDisplay = price_jpy ? `¥${price_jpy.toLocaleString()}` : "Price TBD";
+    const convertedPrice = price_jpy && currency !== "JPY"
+        ? formatCurrency(convertPrice(price_jpy, currency), currency)
         : null;
+    const location = [city, prefecture].filter(Boolean).join(", ") || "Japan";
+
+    // Risk dot
+    const worstHazard = getWorstHazard(hazard_scores);
+    const showDot = worstHazard && (worstHazard.level === "moderate" || worstHazard.level === "high");
+    const dotColor = worstHazard?.level === "high" ? "var(--accent-rose)" : "var(--accent-amber)";
+    const dotTooltip = worstHazard ? `${worstHazard.level.charAt(0).toUpperCase() + worstHazard.level.slice(1)} ${worstHazard.type} risk` : "";
+
+    // Quality border
+    const qualityLevel = (quality_score || 0) >= 0.7 ? "high" : (quality_score || 0) >= 0.5 ? "medium" : undefined;
+
+    // Lifestyle tags — top 2
+    const parsedTags = Array.isArray(lifestyle_tags) ? lifestyle_tags : [];
+    const topTags = parsedTags
+        .slice(0, 2)
+        .map(t => LIVING_PROFILES[t.tag]?.label || t.tag?.replace(/-/g, " "))
+        .filter(Boolean);
 
     return (
-        <Link href={`/properties/${displaySlug}`} id={`property-${displaySlug}`}>
-            <article className="property-card">
-                <div className="property-card-image">
-                    {imgUrl ? (
-                        <img
-                            src={imgUrl}
-                            alt={displayTitle}
-                            loading="lazy"
+        <Link href={`/properties/${slug}`} style={{ textDecoration: "none" }}>
+            <div className="property-card" data-quality={qualityLevel}>
+                <div className="property-card-image" style={{ position: "relative" }}>
+                    {showDot && (
+                        <div
+                            className="risk-dot"
+                            style={{ background: dotColor }}
+                            data-tooltip={dotTooltip}
                         />
+                    )}
+                    {imageUrl ? (
+                        <img src={imageUrl} alt={displayTitle} loading="lazy" />
                     ) : (
-                        <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48, opacity: 0.3 }}>🏠</div>
+                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", fontSize: 14 }}>
+                            No image
+                        </div>
                     )}
-                    {freshness_label === "new" && (
-                        <span
-                            className="badge badge-blue"
-                            style={{
-                                position: "absolute",
-                                top: 12,
-                                left: 12,
-                            }}
-                        >
-                            ✨ New
-                        </span>
-                    )}
-                    {worstHazard && worstHazard.level !== "none" && worstHazard.level !== "low" && (
-                        <span
-                            className={`badge ${worstHazard.level === "high" ? "badge-rose" : "badge-amber"
-                                }`}
-                            style={{
-                                position: "absolute",
-                                top: 12,
-                                right: 12,
-                            }}
-                        >
-                            ⚠ {worstHazard.level} risk
-                        </span>
-                    )}
-                    <div
-                        style={{
-                            position: "absolute",
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: 60,
-                            background: "linear-gradient(transparent, rgba(0,0,0,0.6))",
-                        }}
-                    />
                 </div>
-
                 <div className="property-card-body">
                     <div className="property-card-price">
-                        {price_jpy
-                            ? `¥${price_jpy.toLocaleString()}`
-                            : "Price TBD"}
+                        {priceDisplay}
+                        {convertedPrice && (
+                            <span style={{ fontSize: 14, fontWeight: 400, color: "var(--text-secondary)", marginLeft: 8 }}>
+                                ~{convertedPrice}
+                            </span>
+                        )}
                     </div>
-                    <h3 className="property-card-title">{displayTitle}</h3>
-                    <div className="property-card-location">
-                        📍 {city || "Unknown"}, {prefecture || "Unknown"}
-                    </div>
-
-                    <div className="property-card-meta">
-                        {rooms && <span>🏠 {rooms}</span>}
-                        {building_sqm && <span>📐 {building_sqm} m²</span>}
-                        {land_sqm && <span>🌿 {land_sqm} m²</span>}
-                        {year_built && <span>📅 {year_built}</span>}
-                    </div>
-
-                    {lifestyle_tags && lifestyle_tags.length > 0 && (
-                        <div className="property-card-tags">
-                            {lifestyle_tags.slice(0, 3).map((t) => {
-                                const profile = LIVING_PROFILES[t.tag];
-                                if (!profile) return null;
-                                const badgeClass = `badge badge-${profile.color}`;
-                                return (
-                                    <span key={t.tag} className={badgeClass}>
-                                        {profile.label}
-                                    </span>
-                                );
-                            })}
+                    <div className="property-card-title">{displayTitle}</div>
+                    <div className="property-card-location">{location}</div>
+                    {topTags.length > 0 && (
+                        <div style={{
+                            fontSize: 11,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.08em",
+                            color: "var(--text-muted)",
+                            marginTop: 6,
+                        }}>
+                            {topTags.join(" · ")}
                         </div>
                     )}
-
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            marginTop: 12,
-                            fontSize: 12,
-                            color: "var(--text-muted)",
-                        }}
-                    >
-                        <span>Quality</span>
-                        <div className="quality-bar" style={{ flex: 1 }}>
-                            <div
-                                className="quality-bar-fill"
-                                style={{
-                                    width: `${(quality_score || 0) * 100}%`,
-                                    background: qualityColor,
-                                }}
-                            />
-                        </div>
-                        <span style={{ color: qualityColor }}>
-                            {Math.round((quality_score || 0) * 100)}%
-                        </span>
-                    </div>
                 </div>
-            </article>
+            </div>
         </Link>
     );
 }

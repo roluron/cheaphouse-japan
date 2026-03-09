@@ -15,9 +15,8 @@ import logging
 import time
 from typing import Optional
 
-from openai import OpenAI
-
-from ingestion.config import LLM_BATCH_SIZE, LLM_MODEL, OPENAI_API_KEY
+from ingestion.config import LLM_BATCH_SIZE, LLM_PROVIDER
+from ingestion.llm_client import llm_chat
 from ingestion.db import execute, get_cursor
 
 logger = logging.getLogger(__name__)
@@ -52,10 +51,6 @@ def translate_all(limit: int = 50) -> int:
     Translate all properties that don't have English titles yet.
     Returns count processed.
     """
-    if not OPENAI_API_KEY:
-        logger.error("OPENAI_API_KEY not set. Cannot translate.")
-        return 0
-
     rows = execute(
         """
         SELECT id, original_title, original_description,
@@ -75,13 +70,12 @@ def translate_all(limit: int = 50) -> int:
         logger.info("No properties need translation.")
         return 0
 
-    logger.info(f"Translating {len(rows)} properties...")
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    logger.info(f"Translating {len(rows)} properties (provider: {LLM_PROVIDER})...")
     processed = 0
 
     for i, row in enumerate(rows):
         try:
-            title_en, summary_en = _translate_one(client, row)
+            title_en, summary_en = _translate_one(row)
             _save_translation(row["id"], title_en, summary_en)
             processed += 1
         except Exception as e:
@@ -96,7 +90,7 @@ def translate_all(limit: int = 50) -> int:
     return processed
 
 
-def _translate_one(client: OpenAI, row: dict) -> tuple[str, str]:
+def _translate_one(row: dict) -> tuple[str, str]:
     """Generate English title and summary for one property."""
 
     # Build context for the LLM
@@ -117,21 +111,14 @@ def _translate_one(client: OpenAI, row: dict) -> tuple[str, str]:
         "station_distance": row.get("station_distance"),
     }
 
-    response = client.chat.completions.create(
-        model=LLM_MODEL,
-        messages=[
-            {"role": "system", "content": TRANSLATE_PROMPT},
-            {
-                "role": "user",
-                "content": f"Property listing data:\n{json.dumps(listing_data, ensure_ascii=False, indent=2)}",
-            },
-        ],
-        response_format={"type": "json_object"},
+    result = llm_chat(
+        system_prompt=TRANSLATE_PROMPT,
+        user_content=f"Property listing data:\n{json.dumps(listing_data, ensure_ascii=False, indent=2)}",
         temperature=0.3,
         max_tokens=800,
+        json_mode=True,
     )
 
-    result = json.loads(response.choices[0].message.content)
     title_en = result.get("title_en", row.get("original_title", "Untitled"))
     summary_en = result.get("summary_en", "No summary available.")
 

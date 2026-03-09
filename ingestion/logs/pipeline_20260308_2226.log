@@ -1,0 +1,14 @@
+2026-03-08 22:26:41 [INFO] CheapHouse Japan Pipeline — 2026-03-08 22:26
+2026-03-08 22:26:41 [INFO] Python: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python
+2026-03-08 22:26:41 [INFO] Log: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260308_2226.log
+2026-03-08 22:26:41 [INFO] 
+2026-03-08 22:26:41 [INFO] ============================================================
+2026-03-08 22:26:41 [INFO] PHASE 3: FRESHNESS CHECK
+2026-03-08 22:26:41 [INFO] ============================================================
+2026-03-08 22:26:41 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py check-freshness
+2026-03-08 22:26:41 [INFO]   | Missing dependency: No module named 'supabase'
+2026-03-08 22:26:41 [INFO]   | Install: pip install aiohttp supabase
+2026-03-08 22:26:41 [ERROR]   Freshness check failed (exit 1)
+2026-03-08 22:26:41 [INFO] 
+Pipeline finished in 0h 0m
+2026-03-08 22:26:41 [INFO] Log saved to: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260308_2226.log

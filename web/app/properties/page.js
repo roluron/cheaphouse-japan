@@ -4,6 +4,21 @@ import PropertyFilters from "./PropertyFilters";
 import { getSupabaseServer } from "../lib/supabase-server";
 import { MOCK_PROPERTIES } from "../lib/data";
 
+export const revalidate = 3600;
+
+export async function generateMetadata({ searchParams }) {
+    const params = await searchParams;
+    const prefecture = params?.prefecture && params.prefecture !== "All Prefectures" ? params.prefecture : null;
+    const title = prefecture
+        ? `Properties in ${prefecture} — CheapHouse`
+        : "Browse Properties in Japan — CheapHouse";
+    return {
+        title,
+        description: `Discover affordable homes ${prefecture ? `in ${prefecture}` : "across Japan"} with hazard data, lifestyle tags, and honest assessments.`,
+        openGraph: { title },
+    };
+}
+
 async function getProperties(searchParams) {
     try {
         const supabase = await getSupabaseServer();
@@ -11,7 +26,8 @@ async function getProperties(searchParams) {
             .from("properties")
             .select("*", { count: "exact" })
             .eq("is_published", true)
-            .eq("admin_status", "approved");
+            .eq("admin_status", "approved")
+            .eq("listing_status", "active");
 
         const params = await searchParams;
 
@@ -67,7 +83,7 @@ export default async function PropertiesPage({ searchParams }) {
             <main style={{ paddingTop: 80, minHeight: "100vh" }}>
                 <div className="container" style={{ paddingTop: 32 }}>
                     <div style={{ marginBottom: 8 }}>
-                        <h1 style={{ fontSize: 32, marginBottom: 8 }}>Properties in Japan</h1>
+                        <h1 style={{ fontSize: "clamp(24px, 3vw, 32px)", marginBottom: 8, fontWeight: 400 }}>Properties in Japan</h1>
                         <p style={{ color: "var(--text-secondary)", marginBottom: 24 }}>
                             {count} {count === 1 ? "property" : "properties"} found
                             {isMock && (
@@ -79,6 +95,16 @@ export default async function PropertiesPage({ searchParams }) {
                     </div>
 
                     <PropertyFilters properties={properties} />
+
+                    {properties.length === 0 && (
+                        <div style={{ textAlign: "center", padding: "80px 0" }}>
+                            <div style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 16 }}>—</div>
+                            <h2 style={{ fontSize: 20, marginBottom: 8 }}>No properties match your filters</h2>
+                            <p style={{ color: "var(--text-secondary)", fontSize: 14 }}>
+                                Try broadening your search or removing some filters.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </main>
             <Footer />

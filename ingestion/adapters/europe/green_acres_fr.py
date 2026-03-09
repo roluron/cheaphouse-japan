@@ -1,0 +1,196 @@
+"""
+Green-Acres.fr adapter — international property portal focused on France.
+Lower anti-scraping than SeLoger/Leboncoin. English interface available.
+Target: houses under €150K in rural France.
+"""
+
+from __future__ import annotations
+
+import logging
+import re
+import time
+from typing import Optional
+
+from bs4 import BeautifulSoup
+
+from ingestion.adapters.europe.base_europe import EuropeBaseAdapter
+from ingestion.models import RawListing
+from ingestion.utils import clean_text, make_absolute_url
+from ingestion.utils_europe import parse_price_eur, parse_area_sqm_europe
+
+logger = logging.getLogger(__name__)
+
+
+class GreenAcresFrAdapter(EuropeBaseAdapter):
+    """Adapter for Green-Acres.fr — international property portal (France)."""
+
+    slug = "green-acres-fr"
+    country = "france"
+    currency = "EUR"
+    default_language = "en"
+    base_url = "https://www.green-acres.fr"
+
+    SEARCH_URL = "https://www.green-acres.fr/properties/france/house"
+    SEARCH_PARAMS = {
+        "price_max": 150000,
+        "sort": "date",
+    }
+
+    HEADERS = {
+        "Accept-Language": "en-GB,en;q=0.9,fr;q=0.8",
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        ),
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.delay = 3
+        self.client.headers.update(self.HEADERS)
+
+    def get_listing_urls(self) -> list[str]:
+        """Collect listing URLs from search results with pagination."""
+        urls: list[str] = []
+        page = 1
+
+        while page <= 15:  # Max 15 pages
+            params = {**self.SEARCH_PARAMS, "page": page}
+            query = "&".join(f"{k}={v}" for k, v in params.items())
+            search_url = f"{self.SEARCH_URL}?{query}"
+
+            try:
+                html = self.fetch_page(search_url)
+            except Exception as e:
+                logger.warning(f"[{self.slug}] Search page {page} failed: {e}")
+                break
+
+            soup = BeautifulSoup(html, "lxml")
+
+            # Find listing cards
+            found_any = False
+            for a in soup.select("a[href]"):
+                href = a.get("href", "")
+                if self._is_property_link(href):
+                    full = make_absolute_url(self.base_url, href)
+                    if full not in urls:
+                        urls.append(full)
+                        found_any = True
+
+            if not found_any:
+                break
+
+            page += 1
+            time.sleep(self.delay)
+
+        logger.info(f"[{self.slug}] Found {len(urls)} listing URLs")
+        return urls
+
+    def _is_property_link(self, href: str) -> bool:
+        """Check if URL is a property detail page."""
+        if not href:
+            return False
+        # Green-acres property URLs typically contain /property/ or numeric IDs
+        patterns = [
+            r'/properties/\d+',
+            r'/property/',
+            r'/annonce/',
+            r'/fr/properties/\d+',
+        ]
+        return any(re.search(p, href) for p in patterns)
+
+    def extract_listing(self, url: str) -> Optional[RawListing]:
+        """Extract listing data from a detail page."""
+        try:
+            html = self.fetch_page(url)
+        except Exception as e:
+            logger.error(f"[{self.slug}] Failed: {url}: {e}")
+            return None
+
+        soup = BeautifulSoup(html, "lxml")
+
+        # Title
+        h1 = soup.select_one("h1")
+        title = clean_text(h1.get_text()) if h1 else None
+        if not title:
+            return None
+
+        # Listing ID
+        id_match = re.search(r'/(\d+)', url)
+        listing_id = id_match.group(1) if id_match else url.split("/")[-1]
+
+        # Price
+        price_eur = None
+        price_raw = None
+        price_el = soup.select_one(".price, [class*='price'], [itemprop='price']")
+        if price_el:
+            price_raw = clean_text(price_el.get_text())
+            price_eur = parse_price_eur(price_raw)
+
+        price_jpy = self.price_to_jpy(price_eur) if price_eur else None
+
+        # Location (département / region)
+        location_el = soup.select_one(".location, [class*='location'], [class*='department']")
+        region = clean_text(location_el.get_text()) if location_el else None
+
+        # Area
+        building_sqm = None
+        land_sqm = None
+        for el in soup.select("[class*='area'], [class*='surface'], .detail, .feature"):
+            text = el.get_text()
+            area = parse_area_sqm_europe(text)
+            if area:
+                if "terrain" in text.lower() or "land" in text.lower():
+                    land_sqm = area
+                else:
+                    building_sqm = area
+
+        # Rooms
+        rooms = None
+        rooms_el = soup.select_one("[class*='room'], [class*='chambre']")
+        if rooms_el:
+            m = re.search(r'(\d+)', rooms_el.get_text())
+            if m:
+                rooms = m.group(1)
+
+        # Description
+        desc_el = soup.select_one(".description, [class*='description']")
+        description = clean_text(desc_el.get_text()[:2000]) if desc_el else None
+
+        # Images
+        images = self._extract_images(soup)
+
+        return RawListing(
+            source_slug=self.slug,
+            source_url=url,
+            source_listing_id=listing_id,
+            country=self.country,
+            title=title,
+            price_jpy=price_jpy,
+            price_raw=price_raw,
+            prefecture=region,
+            address_raw=region,
+            building_sqm=building_sqm,
+            land_sqm=land_sqm,
+            rooms=rooms,
+            description=description,
+            image_urls=images,
+            building_type="detached",
+        )
+
+    def _extract_images(self, soup: BeautifulSoup) -> list[str]:
+        """Extract property images."""
+        images: list[str] = []
+        for img in soup.select("img[src], img[data-src], img[data-lazy-src]"):
+            src = img.get("data-lazy-src") or img.get("data-src") or img.get("src", "")
+            if not src or src.startswith("data:"):
+                continue
+            if any(
+                skip in src.lower()
+                for skip in ["logo", "icon", "avatar", "favicon", "placeholder", "pixel"]
+            ):
+                continue
+            full = make_absolute_url(self.base_url, src)
+            if full not in images:
+                images.append(full)
+        return images[:20]

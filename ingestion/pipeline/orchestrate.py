@@ -37,6 +37,11 @@ def run_full_pipeline(
     from ingestion.pipeline.normalize import normalize_all
     results["normalized"] = normalize_all(limit=limit)
 
+    # Stage 1b: Geocode
+    logger.info("═══ Stage 1b: Geocode ═══")
+    from ingestion.pipeline.geocode import geocode_all
+    results["geocoded"] = geocode_all(limit=limit)
+
     # Stage 2: Translate
     if not skip_translate:
         logger.info("═══ Stage 2: Translate ═══")

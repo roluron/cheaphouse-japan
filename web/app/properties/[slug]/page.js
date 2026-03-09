@@ -25,15 +25,26 @@ async function getPropertyBySlug(slug) {
     }
 }
 
+export const revalidate = 1800;
+
 export async function generateMetadata({ params }) {
     const { slug } = await params;
     const property = await getPropertyBySlug(slug);
     if (!property) {
-        return { title: "Property Not Found — CheapHouse Japan" };
+        return { title: "Property Not Found — CheapHouse" };
     }
+    const title = `${property.title_en || property.original_title || "Property"} — CheapHouse`;
+    const description = property.summary_en || `${property.prefecture || "Japan"} property listing — ¥${(property.price_jpy || 0).toLocaleString()}`;
+    const ogImage = property.thumbnail_url || (Array.isArray(property.images) && property.images[0]?.url) || null;
     return {
-        title: `${property.title_en || property.original_title || "Property"} — CheapHouse Japan`,
-        description: property.summary_en || `Property listing in ${property.prefecture || "Japan"}`,
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            type: "article",
+            ...(ogImage ? { images: [{ url: ogImage }] } : {}),
+        },
     };
 }
 
@@ -45,5 +56,29 @@ export default async function PropertyDetailPage({ params }) {
         notFound();
     }
 
-    return <PropertyDetail property={property} />;
+    // JSON-LD Structured Data
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: property.title_en || property.original_title || "Property",
+        description: property.summary_en || "",
+        image: property.thumbnail_url || undefined,
+        offers: {
+            "@type": "Offer",
+            price: property.price_jpy || 0,
+            priceCurrency: "JPY",
+            availability: "https://schema.org/InStock",
+        },
+        ...(property.prefecture ? { areaServed: { "@type": "Place", name: `${property.city || ""}, ${property.prefecture}, Japan` } } : {}),
+    };
+
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <PropertyDetail property={property} />
+        </>
+    );
 }

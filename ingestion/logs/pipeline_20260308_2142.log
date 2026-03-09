@@ -1,0 +1,14 @@
+2026-03-08 21:42:18 [INFO] CheapHouse Japan Pipeline — 2026-03-08 21:42
+2026-03-08 21:42:18 [INFO] Python: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python
+2026-03-08 21:42:18 [INFO] Log: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260308_2142.log
+2026-03-08 21:42:18 [INFO] 
+2026-03-08 21:42:18 [INFO] ============================================================
+2026-03-08 21:42:18 [INFO] PHASE 1: SCRAPING NEW LISTINGS
+2026-03-08 21:42:18 [INFO] ============================================================
+2026-03-08 21:42:18 [INFO] 
+--- koryoya (limit 50) ---
+2026-03-08 21:42:18 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py scrape --source koryoya
+2026-03-08 21:43:32 [WARNING] Pipeline interrupted by user (Ctrl+C).
+2026-03-08 21:43:32 [INFO] 
+Pipeline finished in 0h 1m
+2026-03-08 21:43:32 [INFO] Log saved to: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260308_2142.log

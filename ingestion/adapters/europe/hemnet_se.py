@@ -1,0 +1,223 @@
+"""
+Hemnet.se adapter — Sweden's dominant property portal (90%+ market share).
+Medium-hard scraping. Target: houses under 1.5M SEK in rural areas.
+"""
+
+from __future__ import annotations
+
+import logging
+import random
+import re
+import time
+from typing import Optional
+
+from bs4 import BeautifulSoup
+
+from ingestion.adapters.europe.base_europe import EuropeBaseAdapter
+from ingestion.models import RawListing
+from ingestion.utils import clean_text, make_absolute_url
+from ingestion.utils_europe import parse_price_sek, parse_area_sqm_europe
+
+logger = logging.getLogger(__name__)
+
+
+class HemnetSeAdapter(EuropeBaseAdapter):
+    """Adapter for Hemnet.se — Sweden's dominant property portal."""
+
+    slug = "hemnet-se"
+    country = "sweden"
+    currency = "SEK"
+    default_language = "sv"
+    base_url = "https://www.hemnet.se"
+
+    SEARCH_PARAMS = {
+        "price_max": 1500000,
+        "item_types[]": "villa",
+    }
+
+    TARGET_REGIONS = [
+        "dalarna", "gavleborg", "vasternorrland",
+        "jamtland", "norrbotten", "varmland",
+    ]
+
+    MAX_LISTINGS_PER_RUN = 150
+    REQUEST_DELAY = (5, 8)
+
+    HEADERS = {
+        "Accept-Language": "sv-SE,sv;q=0.9,en;q=0.8",
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+        ),
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.delay = random.randint(*self.REQUEST_DELAY)
+        self.client.headers.update(self.HEADERS)
+
+    def _random_delay(self):
+        """Sleep a random amount within the delay range."""
+        time.sleep(random.uniform(*self.REQUEST_DELAY))
+
+    def get_listing_urls(self) -> list[str]:
+        """Collect listing URLs from search results."""
+        urls: list[str] = []
+
+        for region in self.TARGET_REGIONS:
+            if len(urls) >= self.MAX_LISTINGS_PER_RUN:
+                break
+
+            page = 1
+            while page <= 5 and len(urls) < self.MAX_LISTINGS_PER_RUN:
+                search_url = (
+                    f"{self.base_url}/bostader"
+                    f"?location_ids[]={region}"
+                    f"&price_max=1500000"
+                    f"&item_types[]=villa"
+                    f"&page={page}"
+                )
+                try:
+                    html = self.fetch_page(search_url)
+                except Exception as e:
+                    logger.warning(f"[{self.slug}] {region} page {page} failed: {e}")
+                    break
+
+                soup = BeautifulSoup(html, "lxml")
+
+                found_any = False
+                for a in soup.select("a[href]"):
+                    href = a.get("href", "")
+                    if "/bostad/" in href or "/objekt/" in href:
+                        full = make_absolute_url(self.base_url, href)
+                        if full not in urls:
+                            urls.append(full)
+                            found_any = True
+
+                if not found_any:
+                    break
+
+                page += 1
+                self._random_delay()
+
+            self._random_delay()
+
+        logger.info(f"[{self.slug}] Found {len(urls)} listing URLs (cap: {self.MAX_LISTINGS_PER_RUN})")
+        return urls[:self.MAX_LISTINGS_PER_RUN]
+
+    def extract_listing(self, url: str) -> Optional[RawListing]:
+        """Extract listing data from a detail page."""
+        try:
+            html = self.fetch_page(url)
+        except Exception as e:
+            logger.error(f"[{self.slug}] Failed: {url}: {e}")
+            return None
+
+        soup = BeautifulSoup(html, "lxml")
+
+        # Title
+        h1 = soup.select_one("h1, .listing-title, .property-title")
+        title = clean_text(h1.get_text()) if h1 else None
+        if not title:
+            return None
+
+        # Listing ID
+        id_match = re.search(r'/(?:bostad|objekt)/(\d+)', url)
+        listing_id = id_match.group(1) if id_match else url.split("/")[-1]
+
+        # Price
+        price_sek = None
+        price_raw = None
+        price_el = soup.select_one(
+            ".property-price, [class*='price'], [class*='pris']"
+        )
+        if price_el:
+            price_raw = clean_text(price_el.get_text())
+            price_sek = parse_price_sek(price_raw)
+
+        price_jpy = self.price_to_jpy(price_sek) if price_sek else None
+
+        # Location (län / kommun)
+        location_el = soup.select_one(
+            ".property-location, [class*='location'], "
+            "[class*='address']"
+        )
+        region = clean_text(location_el.get_text()) if location_el else None
+
+        # Area
+        building_sqm = None
+        land_sqm = None
+        text = soup.get_text()
+        # Boarea (living area)
+        m = re.search(r'[Bb]oarea[:\s]*(\d+[\.,]?\d*)\s*(?:m²|kvm)', text)
+        if m:
+            building_sqm = float(m.group(1).replace(',', '.'))
+        # Tomtarea (plot area)
+        m = re.search(r'[Tt]omtarea[:\s]*(\d+[\.,]?\d*)\s*(?:m²|kvm)', text)
+        if m:
+            land_sqm = float(m.group(1).replace(',', '.'))
+
+        if not building_sqm:
+            for el in soup.select("[class*='area'], [class*='size']"):
+                area = parse_area_sqm_europe(el.get_text())
+                if area:
+                    building_sqm = area
+                    break
+
+        # Rooms
+        rooms = None
+        m = re.search(r'(\d+)\s*(?:rum|room)', text, re.IGNORECASE)
+        if m:
+            rooms = m.group(1)
+
+        # Year built
+        year_built = None
+        m = re.search(r'[Bb]yggår[:\s]*(\d{4})', text)
+        if m:
+            year_built = int(m.group(1))
+
+        # Description
+        desc_el = soup.select_one(
+            ".property-description, [class*='description'], "
+            "[class*='beskrivning']"
+        )
+        description = clean_text(desc_el.get_text()[:2000]) if desc_el else None
+
+        # Images
+        images = self._extract_images(soup)
+
+        return RawListing(
+            source_slug=self.slug,
+            source_url=url,
+            source_listing_id=listing_id,
+            country=self.country,
+            title=title,
+            price_jpy=price_jpy,
+            price_raw=price_raw,
+            prefecture=region,
+            address_raw=region,
+            building_sqm=building_sqm,
+            land_sqm=land_sqm,
+            year_built=year_built,
+            rooms=rooms,
+            description=description,
+            image_urls=images,
+            building_type="detached",
+        )
+
+    def _extract_images(self, soup: BeautifulSoup) -> list[str]:
+        """Extract property images."""
+        images: list[str] = []
+        for img in soup.select("img[src], img[data-src]"):
+            src = img.get("data-src") or img.get("src", "")
+            if not src or src.startswith("data:"):
+                continue
+            if any(
+                skip in src.lower()
+                for skip in ["logo", "icon", "avatar", "favicon", "placeholder", "pixel"]
+            ):
+                continue
+            full = make_absolute_url(self.base_url, src)
+            if full not in images:
+                images.append(full)
+        return images[:20]
