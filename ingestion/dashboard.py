@@ -539,16 +539,41 @@ with tab_countries:
 
 # ── TAB 3: AI PROCESSING ─────────────────────────────────────
 with tab_ai:
-    st.subheader("🤖 AI Processing Status")
+    # Auto-refresh every 10 seconds
+    from streamlit_autorefresh import st_autorefresh  # type: ignore
+    try:
+        st_autorefresh(interval=10_000, limit=None, key="ai_refresh")
+    except Exception:
+        # Fallback if streamlit-autorefresh not installed
+        if st.button("🔄 Refresh", key="manual_refresh_ai"):
+            st.rerun()
 
+    st.subheader("🤖 AI Enrichment — Live Tracker")
+
+    # ── Live progress ──
     ai = get_ai_stats()
     if "_error" not in ai:
+        total = ai.get("total", 0) or 1
+        enriched = ai.get("enriched", 0)
+        pending = ai.get("pending", 0)
+        failed = ai.get("failed", 0)
+        translated = ai.get("translated", 0)
+        pct = enriched / total * 100
+
+        # Big progress bar
+        st.progress(min(pct / 100, 1.0), text=f"🔄 Enrichment: {enriched}/{total} ({pct:.1f}%)")
+
         c1, c2, c3, c4, c5 = st.columns(5)
-        c1.metric("Total", ai.get("total", 0))
-        c2.metric("Enriched", ai.get("enriched", 0))
-        c3.metric("Pending", ai.get("pending", 0))
-        c4.metric("Translated", ai.get("translated", 0))
-        c5.metric("Failed", ai.get("failed", 0))
+        c1.metric("Total", total)
+        c2.metric("✅ Enriched", enriched)
+        c3.metric("⏳ Pending", pending)
+        c4.metric("🌐 Translated", translated)
+        c5.metric("❌ Failed", failed)
+
+        if pending > 0:
+            st.info(f"⏳ {pending} listings waiting for enrichment. Page auto-refreshes every 10s.")
+        elif enriched == total:
+            st.success("🎉 All listings enriched!")
 
     st.divider()
     st.subheader("Enrichment by Country")
@@ -578,9 +603,90 @@ with tab_ai:
         )
         st.plotly_chart(fig, use_container_width=True)
 
+    # ── Enrichment Preview — see the actual enriched content ──
     st.divider()
-    st.subheader("Recent AI Enrichments")
-    recent = get_recent_enrichments()
+    st.subheader("🔍 Enrichment Preview — Verify Quality")
+    st.caption("Expand any listing to see the full enriched content.")
+
+    preview_data = _query("""
+        SELECT id, original_title, title_en, summary_en,
+               lifestyle_tags, whats_attractive, whats_risky,
+               what_to_verify, quality_score, primary_source_slug,
+               country, enriched_at, price_jpy, prefecture, city
+        FROM properties
+        WHERE enrichment_status = 'complete'
+        ORDER BY enriched_at DESC NULLS LAST
+        LIMIT 30
+    """)
+    if preview_data and "_error" not in preview_data[0]:
+        for item in preview_data:
+            title_jp = item.get("original_title") or "Untitled"
+            title_en = item.get("title_en") or "—"
+            price = f"¥{item['price_jpy']:,}" if item.get("price_jpy") else "N/A"
+            flag = COUNTRY_FLAGS.get(item.get("country", ""), "🏠")
+            loc = f"{item.get('prefecture', '') or ''} {item.get('city', '') or ''}".strip() or "Unknown"
+            qs = item.get("quality_score")
+            qs_display = f"⭐ {qs}/100" if qs else "—"
+            src = item.get("primary_source_slug", "?")
+
+            with st.expander(f"{flag} **{title_en[:60]}** — {price} — {loc} [{src}] {qs_display}"):
+                col_a, col_b = st.columns(2)
+                with col_a:
+                    st.markdown("**🇯🇵 Original Title:**")
+                    st.text(title_jp)
+                    st.markdown("**🌐 English Title:**")
+                    st.text(title_en)
+                with col_b:
+                    st.markdown("**💰 Price:**")
+                    st.text(price)
+                    st.markdown("**📍 Location:**")
+                    st.text(loc)
+
+                summary = item.get("summary_en") or ""
+                if summary:
+                    st.markdown("**📝 Summary:**")
+                    st.markdown(f"> {summary[:500]}")
+
+                tags = item.get("lifestyle_tags")
+                if tags:
+                    if isinstance(tags, str):
+                        import json as _j
+                        try: tags = _j.loads(tags)
+                        except: tags = [tags]
+                    if isinstance(tags, list) and tags:
+                        st.markdown("**🏷️ Lifestyle Tags:**")
+                        st.markdown(" ".join(f"`{t}`" for t in tags))
+
+                attractive = item.get("whats_attractive") or ""
+                risky = item.get("whats_risky") or ""
+                verify = item.get("what_to_verify") or ""
+
+                if attractive or risky or verify:
+                    st.markdown("---")
+                    ca, cr, cv = st.columns(3)
+                    with ca:
+                        if attractive:
+                            st.markdown("**✅ What's Attractive:**")
+                            st.markdown(attractive[:300])
+                    with cr:
+                        if risky:
+                            st.markdown("**⚠️ What's Risky:**")
+                            st.markdown(risky[:300])
+                    with cv:
+                        if verify:
+                            st.markdown("**🔍 What to Verify:**")
+                            st.markdown(verify[:300])
+
+                ea = item.get("enriched_at")
+                if ea:
+                    st.caption(f"Enriched at: {str(ea)[:19]}")
+    else:
+        st.info("No enriched listings yet. Run the pipeline to start enriching.")
+
+    # ── Recent activity log ──
+    st.divider()
+    st.subheader("Recent AI Activity")
+    recent = get_recent_enrichments(20)
     if recent and "_error" not in recent[0]:
         for item in recent:
             c1, c2, c3, c4 = st.columns([3, 1, 1, 2])
