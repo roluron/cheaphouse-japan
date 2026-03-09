@@ -83,4 +83,23 @@ def run_full_pipeline(
         results["what_to_know"] = 0
 
     logger.info("═══ Pipeline complete ═══")
+
+    # Mark fully enriched properties as complete
+    logger.info("Updating enrichment_status for completed properties...")
+    from ingestion.db import execute_write
+    try:
+        updated = execute_write("""
+            UPDATE properties SET
+                enrichment_status = 'complete',
+                enriched_at = NOW()
+            WHERE enrichment_status != 'complete'
+              AND title_en IS NOT NULL
+              AND lifestyle_tags IS NOT NULL
+              AND quality_score IS NOT NULL
+        """)
+        logger.info(f"Marked {updated} properties as enrichment complete.")
+        results["enrichment_completed"] = updated
+    except Exception as e:
+        logger.error(f"Failed to update enrichment_status: {e}")
+
     return results
