@@ -599,7 +599,7 @@ with tab_ai:
         fig.update_layout(
             plot_bgcolor="rgba(0,0,0,0)",
             paper_bgcolor="rgba(0,0,0,0)",
-            font_color="#ffffff",
+            font_color="#333333",
         )
         st.plotly_chart(fig, use_container_width=True)
 
@@ -625,11 +625,7 @@ with tab_ai:
             price = f"¥{item['price_jpy']:,}" if item.get("price_jpy") else "N/A"
             flag = COUNTRY_FLAGS.get(item.get("country", ""), "🏠")
             loc = f"{item.get('prefecture', '') or ''} {item.get('city', '') or ''}".strip() or "Unknown"
-            qs = item.get("quality_score")
-            qs_display = f"⭐ {qs}/100" if qs else "—"
-            src = item.get("primary_source_slug", "?")
-
-            with st.expander(f"{flag} **{title_en[:60]}** — {price} — {loc} [{src}] {qs_display}"):
+            with st.expander(f"{flag} **{title_en[:70]}** — {price} — {loc}"):
                 col_a, col_b = st.columns(2)
                 with col_a:
                     st.markdown("**🇯🇵 Original Title:**")
@@ -967,21 +963,30 @@ if st.session_state.process_output:
         st.rerun()
 
 
-# ── Custom dark theme ──
+# ── Custom light theme ──
 st.markdown("""
 <style>
-    .stApp { background-color: #0a0a0c; }
+    .stApp { background-color: #ffffff; }
+    [data-testid="stSidebar"] {
+        background-color: #F8F7F4;
+        border-right: 1px solid #e5e5e0;
+    }
     [data-testid="stMetric"] {
-        background-color: #111115;
+        background-color: #F8F7F4;
         padding: 16px;
         border-radius: 8px;
-        border: 1px solid #1a1a20;
+        border: 1px solid #e5e5e0;
     }
-    [data-testid="stMetricValue"] { color: #C9A96E; }
+    [data-testid="stMetricValue"] { color: #b08d4c; font-weight: 700; }
+    [data-testid="stMetricLabel"] { color: #555; }
     .stProgress > div > div { background-color: #C9A96E; }
-    [data-baseweb="tab"] { color: #888; }
-    [aria-selected="true"] { color: #C9A96E !important; border-bottom-color: #C9A96E !important; }
-    code { color: #e0e0e0 !important; }
-    h1, h2, h3 { color: #f0f0f0; }
+    [data-baseweb="tab"] { color: #666; font-weight: 500; }
+    [aria-selected="true"] { color: #b08d4c !important; border-bottom-color: #C9A96E !important; }
+    h1, h2, h3 { color: #1a1a2e; }
+    .stExpander { border: 1px solid #e5e5e0; border-radius: 8px; }
+    [data-testid="stExpanderDetails"] { background-color: #FAFAF8; }
+    code { color: #333 !important; background-color: #f0f0ec !important; }
+    .stAlert { border-radius: 8px; }
 </style>
 """, unsafe_allow_html=True)
+
