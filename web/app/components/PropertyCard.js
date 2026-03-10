@@ -56,7 +56,7 @@ export default function PropertyCard({ property }) {
     const worstHazard = getWorstHazard(hazard_scores);
     const showDot = worstHazard && (worstHazard.level === "moderate" || worstHazard.level === "high");
     const dotColor = worstHazard?.level === "high" ? "var(--accent-rose)" : "var(--accent-amber)";
-    const dotTooltip = worstHazard ? `${worstHazard.level.charAt(0).toUpperCase() + worstHazard.level.slice(1)} ${worstHazard.type} risk` : "";
+    const dotTooltip = worstHazard?.level ? `${worstHazard.level.charAt(0).toUpperCase() + worstHazard.level.slice(1)} ${worstHazard.type} risk` : "";
 
     // Quality border
     const qualityLevel = (quality_score || 0) >= 0.7 ? "high" : (quality_score || 0) >= 0.5 ? "medium" : undefined;
