@@ -3,6 +3,17 @@ import Footer from "../components/Footer";
 import PropertyFilters from "./PropertyFilters";
 import { getSupabaseServer } from "../lib/supabase-server";
 import { MOCK_PROPERTIES } from "../lib/data";
+import Link from "next/link";
+
+const COUNTRIES = [
+    { code: "jp", name: "Japan", flag: "🇯🇵" },
+    { code: "fr", name: "France", flag: "🇫🇷" },
+    { code: "it", name: "Italy", flag: "🇮🇹" },
+    { code: "pt", name: "Portugal", flag: "🇵🇹" },
+    { code: "se", name: "Sweden", flag: "🇸🇪" },
+    { code: "us", name: "USA", flag: "🇺🇸" },
+    { code: "nz", name: "New Zealand", flag: "🇳🇿" },
+];
 
 export const revalidate = 3600;
 
@@ -99,6 +110,31 @@ export default async function PropertiesPage({ searchParams }) {
                                 </span>
                             )}
                         </p>
+                    </div>
+
+                    <div style={{
+                        display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24,
+                        padding: "12px 0", borderBottom: "1px solid var(--border-color)",
+                    }}>
+                        {COUNTRIES.map(c => (
+                            <Link
+                                key={c.code}
+                                href={`/${c.code}/properties`}
+                                style={{
+                                    display: "inline-flex", alignItems: "center", gap: 6,
+                                    padding: "8px 16px", borderRadius: 8,
+                                    border: "1px solid var(--border-color)",
+                                    background: "var(--bg-secondary, #f8f8f5)",
+                                    color: "var(--text-primary)",
+                                    fontSize: 14, fontWeight: 500,
+                                    textDecoration: "none",
+                                    transition: "all 0.15s ease",
+                                }}
+                            >
+                                <span style={{ fontSize: 18 }}>{c.flag}</span>
+                                {c.name}
+                            </Link>
+                        ))}
                     </div>
 
                     <PropertyFilters properties={properties} />
