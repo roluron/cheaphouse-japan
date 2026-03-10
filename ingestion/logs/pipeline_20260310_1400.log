@@ -1,0 +1,13 @@
+2026-03-10 14:00:00 [INFO] CheapHouse Japan Pipeline — 2026-03-10 14:00
+2026-03-10 14:00:00 [INFO] Python: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python
+2026-03-10 14:00:00 [INFO] Log: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260310_1400.log
+2026-03-10 14:00:00 [INFO] 
+2026-03-10 14:00:00 [INFO] ============================================================
+2026-03-10 14:00:00 [INFO] PHASE 3: FRESHNESS CHECK
+2026-03-10 14:00:00 [INFO] ============================================================
+2026-03-10 14:00:00 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py check-freshness
+2026-03-10 14:00:02 [INFO]   | Error: SUPABASE_URL and SUPABASE_SERVICE_KEY must be set
+2026-03-10 14:00:02 [ERROR]   Freshness check failed (exit 1)
+2026-03-10 14:00:02 [INFO] 
+Pipeline finished in 0h 0m
+2026-03-10 14:00:02 [INFO] Log saved to: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260310_1400.log

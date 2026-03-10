@@ -116,7 +116,19 @@ def _normalize_one(raw: dict):
     ]
 
     # ── Country ──────────────────────────────────────────
-    country = raw.get("country") or "japan"
+    SLUG_COUNTRY_MAP = {
+        "hemnet-se": "sweden", "blocket-se": "sweden",
+        "italian-houses": "italy", "gate-away-it": "italy",
+        "1euro-houses": "italy", "immobiliare-it": "italy",
+        "green-acres-fr": "france", "notaires-fr": "france",
+        "idealista-pt": "portugal", "imovirtual-pt": "portugal",
+        "cheap-old-houses-us": "usa", "redfin-us": "usa",
+        "landwatch-us": "usa", "realtor-com": "usa", "auction-com": "usa",
+        "realestate-co-nz": "new-zealand", "trademe-nz": "new-zealand",
+        "homes-co-nz": "new-zealand", "oneroof-nz": "new-zealand",
+        "harcourts-nz": "new-zealand",
+    }
+    country = raw.get("country") or SLUG_COUNTRY_MAP.get(raw["source_slug"], "japan")
 
     # ── Slug generation ──────────────────────────────────
     import re, uuid
