@@ -64,42 +64,38 @@ class HemnetSeAdapter(EuropeBaseAdapter):
         """Collect listing URLs from search results."""
         urls: list[str] = []
 
-        for region in self.TARGET_REGIONS:
-            if len(urls) >= self.MAX_LISTINGS_PER_RUN:
+        # Search all of Sweden — region IDs not needed for initial feed
+        page = 1
+        while page <= 10 and len(urls) < self.MAX_LISTINGS_PER_RUN:
+            search_url = (
+                f"{self.base_url}/bostader"
+                f"?price_max=1500000"
+                f"&item_types%5B%5D=villa"
+                f"&page={page}"
+            )
+            try:
+                html = self.fetch_page(search_url)
+            except Exception as e:
+                logger.warning(f"[{self.slug}] Page {page} failed: {e}")
                 break
 
-            page = 1
-            while page <= 5 and len(urls) < self.MAX_LISTINGS_PER_RUN:
-                search_url = (
-                    f"{self.base_url}/bostader"
-                    f"?location_ids[]={region}"
-                    f"&price_max=1500000"
-                    f"&item_types[]=villa"
-                    f"&page={page}"
-                )
-                try:
-                    html = self.fetch_page(search_url)
-                except Exception as e:
-                    logger.warning(f"[{self.slug}] {region} page {page} failed: {e}")
-                    break
+            soup = BeautifulSoup(html, "lxml")
 
-                soup = BeautifulSoup(html, "lxml")
+            found_count = 0
+            for a in soup.select("a[href]"):
+                href = a.get("href", "")
+                if "/bostad/" in href:
+                    full = make_absolute_url(self.base_url, href)
+                    if full not in urls:
+                        urls.append(full)
+                        found_count += 1
 
-                found_any = False
-                for a in soup.select("a[href]"):
-                    href = a.get("href", "")
-                    if "/bostad/" in href or "/objekt/" in href:
-                        full = make_absolute_url(self.base_url, href)
-                        if full not in urls:
-                            urls.append(full)
-                            found_any = True
+            logger.info(f"[{self.slug}] Page {page}: found {found_count} URLs (total: {len(urls)})")
 
-                if not found_any:
-                    break
+            if found_count == 0:
+                break
 
-                page += 1
-                self._random_delay()
-
+            page += 1
             self._random_delay()
 
         logger.info(f"[{self.slug}] Found {len(urls)} listing URLs (cap: {self.MAX_LISTINGS_PER_RUN})")

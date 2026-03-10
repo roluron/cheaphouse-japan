@@ -79,7 +79,8 @@ class RealEstateCoNZAdapter(NZBaseAdapter):
                     found = 0
                     for a in soup.select("a[href]"):
                         href = a.get("href", "")
-                        if re.search(r'/residential/sale/[\w-]+/[\w-]+/\d+', href):
+                        # Match /43002611/residential/sale/... or /residential/sale/.../digits
+                        if re.search(r'/\d{5,}/', href) or re.search(r'/residential/sale/[\w-]+/[\w-]+/\d+', href):
                             full = make_absolute_url(self.base_url, href)
                             if full not in urls:
                                 urls.append(full)

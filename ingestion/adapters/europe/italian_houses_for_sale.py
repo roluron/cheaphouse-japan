@@ -29,18 +29,23 @@ class ItalianHousesForSaleAdapter(EuropeBaseAdapter):
     default_language = "en"
     base_url = "https://www.italianhousesforsale.com"
 
-    # Regional listing pages
+    # Regional listing pages — actual URL pattern: /property/region
     REGION_URLS = [
-        "/calabria/",
-        "/molise/",
-        "/basilicata/",
-        "/abruzzo/",
-        "/sicily/",
-        "/sardinia/",
-        "/puglia/",
-        "/tuscany/",
-        "/lazio/",
-        "/liguria/",
+        "/property/calabria",
+        "/property/molise",
+        "/property/basilicata",
+        "/property/abruzzo",
+        "/property/sicily",
+        "/property/sardinia",
+        "/property/apulia",
+        "/property/tuscany",
+        "/property/lazio",
+        "/property/liguria",
+        "/property/campania",
+        "/property/umbria",
+        "/property/le-marche",
+        "/property/piedmont",
+        "/property/emilia-romagna",
     ]
 
     HEADERS = {
@@ -92,20 +97,24 @@ class ItalianHousesForSaleAdapter(EuropeBaseAdapter):
         skip_patterns = [
             "/category/", "/tag/", "/about", "/contact",
             "/privacy", "/terms", "/wp-", "/#", "/page/",
-            "javascript:", "mailto:", "tel:",
+            "javascript:", "mailto:", "tel:", "/property-for-sale",
         ]
         for p in skip_patterns:
             if p in href.lower():
                 return False
 
-        # Must be on the same domain or be a relative URL under a region
-        region_base = region_path.strip("/").split("/")[0]
-        if f"/{region_base}/" in href and href.count("/") >= 3:
-            return True
-
-        # Property pages often have numeric IDs or longer slugs
-        if re.search(r'/[a-z0-9-]+-\d+/?$', href):
-            return True
+        # Must contain italianhousesforsale.com or be relative
+        if "italianhousesforsale.com" in href or href.startswith("/"):
+            # Match detail page URLs: /property/region/listing-slug
+            region_name = region_path.strip("/").split("/")[-1]
+            if f"/{region_name}/" in href and href.count("/") >= 3:
+                return True
+            # Or has /property/ path with enough depth
+            if "/property/" in href and href.count("/") >= 4:
+                return True
+            # Property pages often have longer slugs with hyphens
+            if re.search(r'/[\w]+-[\w]+-[\w]+', href):
+                return True
 
         return False
 
