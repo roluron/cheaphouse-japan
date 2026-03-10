@@ -9,12 +9,14 @@ export const revalidate = 3600;
 export async function generateMetadata({ searchParams }) {
     const params = await searchParams;
     const prefecture = params?.prefecture && params.prefecture !== "All Prefectures" ? params.prefecture : null;
-    const title = prefecture
-        ? `Properties in ${prefecture} — CheapHouse`
-        : "Browse Properties in Japan — CheapHouse";
+    const country = params?.country && params.country !== "all" ? params.country : null;
+    const location = prefecture || (country ? country.charAt(0).toUpperCase() + country.slice(1) : null);
+    const title = location
+        ? `Properties in ${location} — CheapHouse`
+        : "Browse Affordable Properties — CheapHouse";
     return {
         title,
-        description: `Discover affordable homes ${prefecture ? `in ${prefecture}` : "across Japan"} with hazard data, lifestyle tags, and honest assessments.`,
+        description: `Discover affordable homes ${location ? `in ${location}` : "worldwide"} with hazard data, lifestyle tags, and honest assessments.`,
         openGraph: { title },
     };
 }
@@ -30,6 +32,11 @@ async function getProperties(searchParams) {
             .eq("listing_status", "active");
 
         const params = await searchParams;
+
+        // Country filter
+        if (params?.country && params.country !== "all") {
+            query = query.eq("country", params.country);
+        }
 
         // Prefecture filter
         if (params?.prefecture && params.prefecture !== "All Prefectures") {
@@ -83,7 +90,7 @@ export default async function PropertiesPage({ searchParams }) {
             <main style={{ paddingTop: 80, minHeight: "100vh" }}>
                 <div className="container" style={{ paddingTop: 32 }}>
                     <div style={{ marginBottom: 8 }}>
-                        <h1 style={{ fontSize: "clamp(24px, 3vw, 32px)", marginBottom: 8, fontWeight: 400 }}>Properties in Japan</h1>
+                        <h1 style={{ fontSize: "clamp(24px, 3vw, 32px)", marginBottom: 8, fontWeight: 400 }}>Browse Properties</h1>
                         <p style={{ color: "var(--text-secondary)", marginBottom: 24 }}>
                             {count} {count === 1 ? "property" : "properties"} found
                             {isMock && (

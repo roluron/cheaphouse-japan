@@ -1,8 +1,8 @@
 {
   "sources": {
     "realestate-co-jp": {
-      "fix_attempts": 0,
-      "last_fix_attempt": null,
+      "fix_attempts": 1,
+      "last_fix_attempt": "2026-03-09T18:39:51.653111",
       "disabled": false,
       "disabled_at": null,
       "last_error": "",
@@ -23,7 +23,215 @@
       "disabled_at": null,
       "last_error": "timeout after 60s",
       "fixes_applied": []
+    },
+    "heritage-homes": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": null,
+      "fixes_applied": []
+    },
+    "eikohome": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": null,
+      "fixes_applied": []
+    },
+    "homes-co-jp": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": null,
+      "fixes_applied": []
+    },
+    "athome-co-jp": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": null,
+      "fixes_applied": []
+    },
+    "akiya-mart": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": null,
+      "fixes_applied": []
+    },
+    "suumo-jp": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": null,
+      "fixes_applied": []
+    },
+    "trademe-nz": {
+      "fix_attempts": 1,
+      "last_fix_attempt": "2026-03-09T18:40:19.682731",
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "realestate-co-nz": {
+      "fix_attempts": 1,
+      "last_fix_attempt": "2026-03-09T18:42:08.129314",
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "homes-co-nz": {
+      "fix_attempts": 1,
+      "last_fix_attempt": "2026-03-09T18:43:43.736901",
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "oneroof-nz": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "harcourts-nz": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "green-acres-fr": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "notaires-fr": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "gate-away-it": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "italian-houses": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "1euro-houses": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": null,
+      "fixes_applied": []
+    },
+    "idealista-pt": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "imovirtual-pt": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": null,
+      "fixes_applied": []
+    },
+    "blocket-se": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "hemnet-se": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": null,
+      "fixes_applied": []
+    },
+    "immobiliare-it": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "cheap-old-houses-us": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "redfin-us": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "realtor-com": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "landwatch-us": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
+    },
+    "auction-com": {
+      "fix_attempts": 0,
+      "last_fix_attempt": null,
+      "disabled": false,
+      "disabled_at": null,
+      "last_error": "",
+      "fixes_applied": []
     }
   },
-  "last_run": "2026-03-08T22:03:03.189515"
+  "last_run": "2026-03-09T18:43:43.736904"
 }

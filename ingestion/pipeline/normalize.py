@@ -115,6 +115,16 @@ def _normalize_one(raw: dict):
         }
     ]
 
+    # ── Country ──────────────────────────────────────────
+    country = raw.get("country") or "japan"
+
+    # ── Slug generation ──────────────────────────────────
+    import re, uuid
+    title_for_slug = raw.get("title") or f"property-{uuid.uuid4().hex[:8]}"
+    slug = re.sub(r'[^a-z0-9\s-]', '', title_for_slug.lower())
+    slug = re.sub(r'\s+', '-', slug).strip('-')[:80]
+    slug = f"{slug}-{uuid.uuid4().hex[:8]}"
+
     # ── Insert into properties ───────────────────────────
     with get_cursor(commit=True) as cur:
         cur.execute(
@@ -131,9 +141,9 @@ def _normalize_one(raw: dict):
                 renovation_estimate,
                 nearest_station, station_distance,
                 images, thumbnail_url,
-                listing_status, admin_status,
+                listing_status, admin_status, is_published,
                 first_seen_at, last_seen_at, last_checked_at,
-                freshness_label
+                freshness_label, country, slug
             ) VALUES (
                 %(source_slug)s, %(source_ids)s::jsonb, %(url)s,
                 %(title)s, %(description)s,
@@ -146,9 +156,9 @@ def _normalize_one(raw: dict):
                 %(renovation)s,
                 %(station)s, %(station_dist)s,
                 %(images)s::jsonb, %(thumb)s,
-                'draft', 'pending_review',
+                'active', 'approved', true,
                 %(fetched)s, %(fetched)s, %(fetched)s,
-                'new'
+                'new', %(country)s, %(slug)s
             )
             ON CONFLICT DO NOTHING
             RETURNING id
@@ -183,6 +193,8 @@ def _normalize_one(raw: dict):
                 "images": __import__("json").dumps(images_json),
                 "thumb": thumbnail_url,
                 "fetched": raw.get("fetched_at"),
+                "country": country,
+                "slug": slug,
             },
         )
 

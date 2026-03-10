@@ -1,0 +1,13 @@
+2026-03-10 06:00:01 [INFO] CheapHouse Japan Pipeline — 2026-03-10 06:00
+2026-03-10 06:00:01 [INFO] Python: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python
+2026-03-10 06:00:01 [INFO] Log: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260310_0600.log
+2026-03-10 06:00:01 [INFO] 
+2026-03-10 06:00:01 [INFO] ============================================================
+2026-03-10 06:00:01 [INFO] PHASE 2: ENRICHMENT PIPELINE (Ollama LLM)
+2026-03-10 06:00:01 [INFO] ============================================================
+2026-03-10 06:00:01 [INFO]   Ollama running. Models: qwen2.5:14b, severus:latest
+2026-03-10 06:00:01 [INFO]   Running: /Users/test/Documents/CheapHouse Japan/ingestion/venv/bin/python /Users/test/Documents/CheapHouse Japan/ingestion/run.py pipeline --limit 500
+2026-03-10 10:00:01 [ERROR]   Enrichment pipeline timed out after 14400s.
+2026-03-10 10:00:01 [INFO] 
+Pipeline finished in 4h 0m
+2026-03-10 10:00:01 [INFO] Log saved to: /Users/test/Documents/CheapHouse Japan/ingestion/logs/pipeline_20260310_0600.log
