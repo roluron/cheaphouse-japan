@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSupabaseServer } from "../lib/supabase-server";
 import { getCurrentUser } from "../lib/auth";
+import Link from "next/link";
 
 const ADMIN_EMAILS = ["roluron@gmail.com"];
 
@@ -20,11 +21,11 @@ export default async function AdminLayout({ children }) {
                 <div style={{ fontSize: 16, fontWeight: 700, fontFamily: "var(--font-display)", marginBottom: 24, padding: "0 12px" }}>
                     <span className="text-gradient">Admin</span>
                 </div>
-                <a href="/admin" style={{ padding: "10px 12px", borderRadius: "var(--radius-md)", fontSize: 14, color: "var(--text-secondary)", textDecoration: "none" }}>Dashboard</a>
-                <a href="/admin/review" style={{ padding: "10px 12px", borderRadius: "var(--radius-md)", fontSize: 14, color: "var(--text-secondary)", textDecoration: "none" }}>Review Queue</a>
-                <a href="/admin/sources" style={{ padding: "10px 12px", borderRadius: "var(--radius-md)", fontSize: 14, color: "var(--text-secondary)", textDecoration: "none" }}>Sources</a>
+                <Link href="/admin" style={{ padding: "10px 12px", borderRadius: "var(--radius-md)", fontSize: 14, color: "var(--text-secondary)", textDecoration: "none" }}>Dashboard</Link>
+                <Link href="/admin/review" style={{ padding: "10px 12px", borderRadius: "var(--radius-md)", fontSize: 14, color: "var(--text-secondary)", textDecoration: "none" }}>Review Queue</Link>
+                <Link href="/admin/sources" style={{ padding: "10px 12px", borderRadius: "var(--radius-md)", fontSize: 14, color: "var(--text-secondary)", textDecoration: "none" }}>Sources</Link>
                 <div style={{ flex: 1 }} />
-                <a href="/" style={{ padding: "10px 12px", fontSize: 13, color: "var(--text-muted)", textDecoration: "none" }}>← Back to site</a>
+                <Link href="/" style={{ padding: "10px 12px", fontSize: 13, color: "var(--text-muted)", textDecoration: "none" }}>← Back to site</Link>
             </aside>
 
             {/* Main content */}

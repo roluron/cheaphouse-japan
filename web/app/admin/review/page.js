@@ -1,27 +1,39 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getSupabaseBrowser } from "../../lib/supabase-browser";
+
+async function loadReviewQueue() {
+    const supabase = getSupabaseBrowser();
+    const { data } = await supabase
+        .from("properties")
+        .select("*")
+        .eq("admin_status", "pending_review")
+        .order("quality_score", { ascending: false })
+        .limit(50);
+    return data || [];
+}
 
 export default function ReviewPage() {
     const [properties, setProperties] = useState([]);
     const [expanded, setExpanded] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => { fetchQueue(); }, []);
-
-    const fetchQueue = async () => {
-        setLoading(true);
-        const supabase = getSupabaseBrowser();
-        const { data } = await supabase
-            .from("properties")
-            .select("*")
-            .eq("admin_status", "pending_review")
-            .order("quality_score", { ascending: false })
-            .limit(50);
-        setProperties(data || []);
+    const fetchQueue = useCallback(async () => {
+        const data = await loadReviewQueue();
+        setProperties(data);
         setLoading(false);
-    };
+    }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        loadReviewQueue().then((data) => {
+            if (cancelled) return;
+            setProperties(data);
+            setLoading(false);
+        });
+        return () => { cancelled = true; };
+    }, []);
 
     const handleAction = async (id, action) => {
         const supabase = getSupabaseBrowser();

@@ -138,7 +138,8 @@ CREATE TABLE IF NOT EXISTS properties (
 
     -- Quality and status
     quality_score       DOUBLE PRECISION DEFAULT 0,
-    listing_status      TEXT DEFAULT 'draft',
+    listing_status      TEXT DEFAULT 'draft'
+                        CHECK (listing_status IN ('draft', 'active', 'uncertain', 'sold', 'removed')),
     admin_status        TEXT DEFAULT 'pending_review',
     admin_notes         TEXT,
 
@@ -146,6 +147,9 @@ CREATE TABLE IF NOT EXISTS properties (
     first_seen_at       TIMESTAMPTZ DEFAULT now(),
     last_seen_at        TIMESTAMPTZ DEFAULT now(),
     last_checked_at     TIMESTAMPTZ DEFAULT now(),
+    status_checked_at   TIMESTAMPTZ,
+    status_reason       TEXT,
+    check_error_count   INT DEFAULT 0,
     gone_since          TIMESTAMPTZ,
     freshness_label     TEXT DEFAULT 'new',
 

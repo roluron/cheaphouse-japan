@@ -9,13 +9,13 @@ const playfair = Playfair_Display({
 });
 
 export const metadata = {
-  title: "CheapHouse — Find Dream Homes Around the World",
+  title: "CheapHouse Japan — Verify Before You Buy",
   description:
-    "The decision platform for international home buyers. Discover, compare, and decide on affordable homes worldwide.",
-  keywords: ["real estate", "cheap houses", "akiya", "Japan", "affordable homes", "international property"],
+    "Verify whether a Japanese property is available, workable, and worth pursuing before you spend on travel or due diligence.",
+  keywords: ["akiya", "Japan property", "listing verification", "Japanese real estate"],
   openGraph: {
-    title: "CheapHouse — Find Dream Homes Around the World",
-    description: "The decision platform for international buyers. Discover affordable homes worldwide.",
+    title: "CheapHouse Japan — Verify Before You Buy",
+    description: "Availability first. Evidence before certainty.",
     type: "website",
   },
 };

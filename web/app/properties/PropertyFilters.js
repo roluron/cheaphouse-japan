@@ -22,9 +22,9 @@ const PRICE_RANGES = [
 ];
 
 const SAFETY_OPTIONS = [
-    { value: "all", label: "All Properties" },
-    { value: "low-only", label: "Low Risk Only" },
-    { value: "no-high", label: "No High Risk" },
+    { value: "all", label: "All hazard evidence" },
+    { value: "low-only", label: "Assessed low risk" },
+    { value: "no-high", label: "Assessed, no high risk" },
 ];
 
 function getHazardLevels(property) {
@@ -67,12 +67,12 @@ export default function PropertyFilters({ properties }) {
         if (safetyFilter === "low-only") {
             results = results.filter((p) => {
                 const levels = getHazardLevels(p);
-                return levels.length === 0 || levels.every(l => l === "none" || l === "low");
+                return levels.length > 0 && levels.every(l => l === "none" || l === "low");
             });
         } else if (safetyFilter === "no-high") {
             results = results.filter((p) => {
                 const levels = getHazardLevels(p);
-                return !levels.includes("high");
+                return levels.length > 0 && !levels.includes("unknown") && !levels.includes("high");
             });
         }
 

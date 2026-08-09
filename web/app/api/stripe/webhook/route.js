@@ -2,26 +2,24 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder');
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-// Use service role client for webhook (no user session)
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
-
 export async function POST(request) {
-    const body = await request.text();
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const sig = request.headers.get('stripe-signature');
+
+    if (!stripeSecretKey || !webhookSecret || !supabaseUrl || !serviceRoleKey || !sig) {
+        return NextResponse.json({ error: 'Webhook is not securely configured' }, { status: 503 });
+    }
+
+    const stripe = new Stripe(stripeSecretKey);
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const body = await request.text();
 
     let event;
     try {
-        if (webhookSecret && sig) {
-            event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-        } else {
-            event = JSON.parse(body);
-        }
+        event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err) {
         console.error('Webhook signature verification failed:', err.message);
         return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });

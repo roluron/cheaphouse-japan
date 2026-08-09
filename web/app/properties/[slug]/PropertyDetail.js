@@ -4,10 +4,25 @@ import { useState } from "react";
 import Link from "next/link";
 import Nav from "../../components/Nav";
 import Footer from "../../components/Footer";
-import SaveButton from "../../components/SaveButton";
 import TotalCostCalculator from "../../components/TotalCostCalculator";
 import RenovationEstimator from "../../components/RenovationEstimator";
 import { LIVING_PROFILES } from "../../lib/data";
+import { getAvailability } from "../../lib/availability";
+
+function WtkSection({ title, color, items }) {
+    if (!items?.length) return null;
+    return (
+        <div className="glass-card" style={{ padding: 20 }}>
+            <h4 style={{ fontSize: 13, fontWeight: 600, color, marginBottom: 12, fontFamily: "var(--font-sans)", display: "flex", alignItems: "center" }}>
+                <span className="wtk-dot" style={{ background: color }} />
+                {title}
+            </h4>
+            <ul style={{ listStyle: "none", fontSize: 13, color: "var(--text-secondary)" }}>
+                {items.map((item, index) => <li key={index} style={{ padding: "6px 0", lineHeight: 1.5 }}>{item}</li>)}
+            </ul>
+        </div>
+    );
+}
 
 export default function PropertyDetail({ property }) {
     const [selectedImage, setSelectedImage] = useState(0);
@@ -16,16 +31,17 @@ export default function PropertyDetail({ property }) {
         title_en, original_title, summary_en, original_description,
         price_jpy, price_display, prefecture, city, region,
         building_sqm, land_sqm, year_built, rooms, floors,
-        building_type, structure, condition_rating, renovation_estimate,
-        images, quality_score, hazard_scores, lifestyle_tags,
+        structure, condition_rating, renovation_estimate,
+        images, hazard_scores, lifestyle_tags,
         whats_attractive, whats_unclear, whats_risky, what_to_verify,
-        freshness_label, original_url, source_url, thumbnail_url,
-        slug, latitude, longitude, primary_source_slug,
+        original_url, source_url, thumbnail_url,
+        latitude, longitude, primary_source_slug,
     } = property;
 
     const displayTitle = title_en || original_title || "Untitled Property";
     const displaySummary = summary_en || original_description || "";
     const displaySourceUrl = original_url || source_url || "#";
+    const availability = getAvailability(property);
 
     const imageList = Array.isArray(images) && images.length > 0
         ? images.map((img) => (typeof img === "string" ? { url: img } : img))
@@ -59,20 +75,6 @@ export default function PropertyDetail({ property }) {
         return { attractive, unclear, risky, verify };
     })();
 
-    const WtkSection = ({ title, color, items }) => (
-        items?.length > 0 && (
-            <div className="glass-card" style={{ padding: 20 }}>
-                <h4 style={{ fontSize: 13, fontWeight: 600, color, marginBottom: 12, fontFamily: "var(--font-sans)", display: "flex", alignItems: "center" }}>
-                    <span className="wtk-dot" style={{ background: color }} />
-                    {title}
-                </h4>
-                <ul style={{ listStyle: "none", fontSize: 13, color: "var(--text-secondary)" }}>
-                    {items.map((item, i) => <li key={i} style={{ padding: "6px 0", lineHeight: 1.5 }}>{item}</li>)}
-                </ul>
-            </div>
-        )
-    );
-
     return (
         <>
             <Nav />
@@ -84,6 +86,18 @@ export default function PropertyDetail({ property }) {
                         {" / "}
                         <span>{prefecture || "Unknown"}</span>
                         {city && <>{" / "}<span>{city}</span></>}
+                    </div>
+
+                    <div className={`availability-panel availability-panel-${availability.tone}`}>
+                        <div>
+                            <span className={`availability-badge availability-${availability.tone}`}>{availability.label}</span>
+                            <strong>{availability.detail}</strong>
+                        </div>
+                        {availability.key !== "verified" && (
+                            <Link href={`/verify?url=${encodeURIComponent(displaySourceUrl)}`} className="btn btn-primary btn-sm">
+                                Recheck this listing
+                            </Link>
+                        )}
                     </div>
 
                     <div className="property-detail-grid" style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 48, alignItems: "start" }}>
@@ -174,7 +188,7 @@ export default function PropertyDetail({ property }) {
                                 </a>
                             </div>
 
-                            {/* Calculators */}
+                            {/* Cost exploration */}
                             <TotalCostCalculator property={property} isPremium={true} />
                             <RenovationEstimator property={property} isPremium={true} />
 
@@ -240,20 +254,18 @@ export default function PropertyDetail({ property }) {
                                         ~${Math.round(price_jpy / 150).toLocaleString()} USD
                                     </div>
                                 )}
-                                <a href={displaySourceUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ width: "100%", marginBottom: 10 }}>
-                                    View Original Listing
+                                <a href={displaySourceUrl} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ width: "100%", marginBottom: 10 }}>
+                                    Open source record
                                 </a>
-                                <div className="btn btn-secondary" style={{ width: "100%", justifyContent: "center" }}>
-                                    <SaveButton propertyId={property.id} size={16} /> Save
-                                </div>
+                                <Link href={`/verify?url=${encodeURIComponent(displaySourceUrl)}`} className="btn btn-primary" style={{ width: "100%" }}>
+                                    Request 48-hour verification
+                                </Link>
                             </div>
 
-                            {/* Report */}
                             <div className="glass-card" style={{ padding: 16, marginBottom: 20, textAlign: "center" }}>
-                                <button className="btn btn-secondary" style={{ width: "100%", fontSize: 13 }}
-                                    onClick={() => alert('PDF reports are coming soon.')}>
-                                    Download Report
-                                </button>
+                                <p style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                                    $149 founding beta. No subscription. Payment only after we confirm the source can be checked.
+                                </p>
                             </div>
 
                             {/* Hazards */}
@@ -263,9 +275,9 @@ export default function PropertyDetail({ property }) {
                                 </h4>
                                 {parsedHazards ? (
                                     Object.entries(parsedHazards).map(([type, data]) => {
-                                        const level = data?.level || "none";
-                                        const fillWidth = level === "high" ? "90%" : level === "moderate" ? "50%" : level === "low" ? "25%" : "5%";
-                                        const fillColor = level === "high" ? "var(--accent-rose)" : level === "moderate" ? "var(--accent-amber)" : "var(--accent-green)";
+                                        const level = data?.level || "unknown";
+                                        const fillWidth = level === "high" ? "90%" : level === "moderate" ? "50%" : level === "low" ? "25%" : level === "none" ? "5%" : "0%";
+                                        const fillColor = level === "high" ? "var(--accent-rose)" : level === "moderate" ? "var(--accent-amber)" : level === "low" || level === "none" ? "var(--accent-green)" : "var(--text-muted)";
                                         return (
                                             <div key={type}>
                                                 <div className="hazard-bar">

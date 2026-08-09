@@ -1,19 +1,18 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 const MAX_COMPARE = 3;
 const STORAGE_KEY = "cheaphouse_compare";
 
 export function useCompare() {
-    const [compareIds, setCompareIds] = useState([]);
-
-    useEffect(() => {
+    const [compareIds, setCompareIds] = useState(() => {
         try {
+            if (typeof window === "undefined") return [];
             const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) setCompareIds(JSON.parse(stored));
-        } catch { }
-    }, []);
+            return stored ? JSON.parse(stored) : [];
+        } catch { return []; }
+    });
 
     const persist = useCallback((ids) => {
         setCompareIds(ids);

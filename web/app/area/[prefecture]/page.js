@@ -2,7 +2,7 @@ import Nav from "../../components/Nav";
 import Footer from "../../components/Footer";
 import Link from "next/link";
 import { getSupabaseServer } from "../../lib/supabase-server";
-import { notFound } from "next/navigation";
+import { getVerifiedCutoff } from "../../lib/availability";
 
 const PREFECTURE_LIST = [
     "Hokkaido", "Aomori", "Iwate", "Miyagi", "Akita", "Yamagata", "Fukushima", "Ibaraki", "Tochigi", "Gunma",
@@ -31,7 +31,9 @@ export default async function AreaPage({ params }) {
         .select("price_jpy, building_sqm, land_sqm, year_built, hazard_scores, lifestyle_tags, city, latitude, longitude")
         .eq("is_published", true)
         .eq("admin_status", "approved")
+        .eq("country", "japan")
         .eq("listing_status", "active")
+        .gte("last_checked_at", getVerifiedCutoff())
         .eq("prefecture", name);
 
     if (!properties || properties.length === 0) {
@@ -41,7 +43,7 @@ export default async function AreaPage({ params }) {
                 <main style={{ paddingTop: 80, minHeight: "100vh" }}>
                     <div className="container" style={{ paddingTop: 40, paddingBottom: 80, textAlign: "center" }}>
                         <h1 style={{ fontSize: 28, marginBottom: 12 }}>No data for {name}</h1>
-                        <p style={{ color: "var(--text-secondary)", marginBottom: 24 }}>We don't have listings in this prefecture yet.</p>
+                        <p style={{ color: "var(--text-secondary)", marginBottom: 24 }}>We don&apos;t have listings in this prefecture yet.</p>
                         <Link href="/properties" className="btn btn-primary" style={{ padding: "10px 24px" }}>Browse All Properties</Link>
                     </div>
                 </main>

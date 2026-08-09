@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 #    Until then, use heuristic estimates for MVP demo. ────────
 
 
-def enrich_hazard_all(limit: int = 500, use_heuristics: bool = True) -> int:
+def enrich_hazard_all(limit: int = 500, use_heuristics: bool = False) -> int:
     """
     Attach hazard scores to all properties that don't have them.
     Returns count processed.

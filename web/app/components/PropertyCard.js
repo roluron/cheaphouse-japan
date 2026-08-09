@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { convertPrice, formatCurrency } from "../lib/currencies";
 import { LIVING_PROFILES } from "../lib/data";
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
+import { getAvailability } from "../lib/availability";
 
 function getWorstHazard(hazard_scores) {
     if (!hazard_scores || typeof hazard_scores !== "object") return null;
@@ -21,14 +22,14 @@ function getWorstHazard(hazard_scores) {
 }
 
 export default function PropertyCard({ property }) {
-    const [currency, setCurrency] = useState("USD");
-
-    useEffect(() => {
-        setCurrency(localStorage.getItem("ch-currency") || "USD");
-        const handler = (e) => setCurrency(e.detail);
-        window.addEventListener("currencyChange", handler);
-        return () => window.removeEventListener("currencyChange", handler);
-    }, []);
+    const currency = useSyncExternalStore(
+        (listener) => {
+            window.addEventListener("currencyChange", listener);
+            return () => window.removeEventListener("currencyChange", listener);
+        },
+        () => localStorage.getItem("cheaphouse_currency") || "USD",
+        () => "USD",
+    );
 
     const {
         slug,
@@ -42,6 +43,8 @@ export default function PropertyCard({ property }) {
         hazard_scores,
         quality_score,
         lifestyle_tags,
+        last_checked_at,
+        listing_status,
     } = property;
 
     const displayTitle = title_en || original_title || "Untitled Property";
@@ -51,6 +54,7 @@ export default function PropertyCard({ property }) {
         ? formatCurrency(convertPrice(price_jpy, currency), currency)
         : null;
     const location = [city, prefecture].filter(Boolean).join(", ") || "Japan";
+    const availability = getAvailability({ listing_status, last_checked_at });
 
     // Risk dot
     const worstHazard = getWorstHazard(hazard_scores);
@@ -72,6 +76,9 @@ export default function PropertyCard({ property }) {
         <Link href={`/properties/${slug}`} style={{ textDecoration: "none" }}>
             <div className="property-card" data-quality={qualityLevel}>
                 <div className="property-card-image" style={{ position: "relative" }}>
+                    <span className={`availability-badge availability-${availability.tone}`}>
+                        {availability.label}
+                    </span>
                     {showDot && (
                         <div
                             className="risk-dot"
@@ -98,6 +105,7 @@ export default function PropertyCard({ property }) {
                     </div>
                     <div className="property-card-title">{displayTitle}</div>
                     <div className="property-card-location">{location}</div>
+                    <div className="property-card-checked">{availability.detail}</div>
                     {topTags.length > 0 && (
                         <div style={{
                             fontSize: 11,
